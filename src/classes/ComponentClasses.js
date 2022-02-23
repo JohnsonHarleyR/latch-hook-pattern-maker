@@ -7,6 +7,7 @@ export class CellClass {
         this.symbol = symbol;
         this.xPos = xPos;
         this.yPos = yPos;
+        this.colorName = "";
     }
 }
 
@@ -14,5 +15,12 @@ export class ColorCellClass extends CellClass {
     constructor(id, cellType, className, fillColor, colorName, symbol) {
         super(id, cellType, className, fillColor, symbol, null, null);
         this.colorName = colorName;
+    }
+}
+
+export class PatternCellClass extends CellClass {
+    constructor(id, refId, cellType, className, fillColor, symbol, xPos, yPos) {
+        super(id, cellType, className, fillColor, symbol, xPos, yPos);
+        this.refId = refId;
     }
 }

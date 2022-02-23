@@ -30,8 +30,10 @@ const PatternCell = ({cell}) => {
             let cellCopy = patternCellsCopy[cell.yPos][cell.xPos];
             if (activeColorCell !== null) {
                 cellCopy.fillColor = activeColorCell.fillColor;
+                cellCopy.refId = activeColorCell.id;
             } else {
                 cellCopy.fillColor = "#fff";
+                cellCopy.refId = null;
             }
             setPatternCells(patternCellsCopy);
     }

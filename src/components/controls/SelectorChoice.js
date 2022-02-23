@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { PatternContext } from '../../PatternContext';
+import { PatternContext, createColorCell } from '../../PatternContext';
 import ColorCell from '../ColorCell';
 import "../../styles.css";
 
@@ -21,16 +21,15 @@ const SelectorChoice = () => {
 
     useEffect(() => {
         if (activeColorCell !== null) {
+            setColor(activeColorCell.fillColor);
             setButtonText("Change");
             setShowDelete(true);
             nameInput.current.value = activeColorCell.colorName;
             selector.current.value = activeColorCell.fillColor;
-
         } else {
             setButtonText("Add");
             setShowDelete(false);
             nameInput.current.value = "";
-            selector.current.value = color;
         }
     }, [activeColorCell]);
 
@@ -47,10 +46,34 @@ const SelectorChoice = () => {
     }
 
     const hitDefButton = () => {
-        if (activeColorCell !== null) {
-
+        let newName = nameInput.current.value;
+        console.log(newName);
+        if (newName === "") {
+            setErrorMessage("You must enter a value for the color name.");
+        } else if (activeColorCell !== null) {
+            setErrorMessage("");
+            let cellsCopy = [...colorCells];
+            let index = null;
+            let count = 0;
+            cellsCopy.forEach(cell => {
+                if (cell.id === activeColorCell.id) {
+                    index = count;
+                }
+                count++;
+            });
+            if (index !== null) {
+                let newCell = cellsCopy[index];
+                newCell.colorName = newName;
+                newCell.fillColor = color;
+                cellsCopy[index] = newCell;
+                setActiveColorCell(cellsCopy[index])
+                setColorCells(cellsCopy);
+            }
         } else {
-
+            setErrorMessage("");
+            let cellsCopy = [...colorCells];
+            cellsCopy.push(createColorCell("color", color, newName, "", colorCells));
+            setColorCells(cellsCopy);
         }
     }
 
@@ -80,6 +103,8 @@ const SelectorChoice = () => {
             <input type="text" placeholder="Color Name" ref={nameInput}/>
             <button ref={defButton} onClick={hitDefButton}>{buttonText}</button>
             <button ref={deleteButton} onClick={hitDeleteButton}>Delete</button>
+            <br></br>
+            {errorMessage}
         </div>
     );
 }

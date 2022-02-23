@@ -1,5 +1,5 @@
 import React, {useState, useEffect, createContext} from 'react';
-import { CellClass, ColorCellClass } from './classes/ComponentClasses';
+import { CellClass, PatternCellClass, ColorCellClass } from './classes/ComponentClasses';
 
 const PatternContext = createContext({colorCells: [], patternCells: [], activeColorCell: null});
 
@@ -29,7 +29,7 @@ const PatternProvider = ({children}) => {
                     if (cellsCopy[y] && cellsCopy[y][x]) {
                         newCell = cellsCopy[y][x];
                     } else {
-                        newCell= createCell("pattern", "#fff", "", x, y);
+                        newCell= createCell("pattern", "#fff", "", x, y, null);
                     }
                     newRow.push(newCell);
                 }
@@ -60,7 +60,7 @@ const PatternProvider = ({children}) => {
     );
 }
 
-const createColorCell = (type, color, colorName, symbol, colorCells) => {
+export const createColorCell = (type, color, colorName, symbol, colorCells) => {
     let newNumber;
     if (colorCells === null || colorCells === undefined || 
         colorCells.length === 0) {
@@ -74,7 +74,7 @@ const createColorCell = (type, color, colorName, symbol, colorCells) => {
     return newCell;
 }
 
-const createCell = (type, color, symbol, x, y) => {
+export const createCell = (type, color, symbol, x, y, refId) => {
     let id = `p${x}-${y}`;
 
     let topBorder = false;
@@ -93,7 +93,7 @@ const createCell = (type, color, symbol, x, y) => {
         rightBorder = true;
     }
 
-    let newCell = new CellClass(id, type, "cell", color, symbol, x, y);
+    let newCell = new PatternCellClass(id, refId, type, "cell", color, symbol, x, y);
 
     if (topBorder) {
         newCell.className += " top";
