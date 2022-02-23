@@ -1,36 +1,47 @@
-import React, {useState} from 'react';    
+import React, {useContext, useEffect, useRef, useState} from 'react';    
+import { PatternContext } from '../../PatternContext';
 import { post } from 'axios';    
 const FileUpload = () => {  
-        const [file, setFile] = useState({file: ''});
-        
+        const {image, setImage} = useContext(PatternContext);
+        const canvasDiv = useRef();
+        const canvasRef = useRef();
+        let ctx;
+
         const submit = async (e) => {    
-                e.preventDefault();    
-                const url = `http://localhost:61331/api/Uploadfiles/Uploadfile`;    
-                const formData = new FormData();    
-                formData.append('body', file);    
-                const config = {    
-                        headers: {    
-                                'content-type': 'multipart/form-data',    
-                        },    
-                };    
-                return post(url, formData, config);    
+                console.log('upload');   
         }    
 
         const setTheFile = (e) => {    
-                console.log(e.target.files[0]);
-                setFile({ file: e.target.files[0] });    
-        }  
+                ctx = canvasRef.current.getContext("2d");
+                let reader = new FileReader();
+                reader.onload = (event) => {
+                        let img = new Image();
+                        img.onload = () => {
+                                canvasRef.current.width = img.width;
+                                canvasRef.current.height = img.height;
+                                ctx.drawImage(img,0,0);
+                                setImage(img);
+                        }
+                        img.src = event.target.result;
+                }
+                reader.readAsDataURL(e.target.files[0]);  
+        }
+
+        useEffect(() => {
+                //canvasDiv.current.style.display = "none";
+                canvasDiv.current.style.display = "block";
+                ctx = canvasRef.current.getContext("2d");
+        }, []);
 
         return (    
-            <div className="container-fluid">    
-                    <form onSubmit={e => this.submit(e)}>    
-                            <div className="col-sm-12 btn btn-primary">       
-                    </div>    
-                            <h1>File Upload</h1>    
-                            <input type="file" onChange={setTheFile} />    
-                            <button className="btn btn-primary" onClick={submit}>Upload</button>    
-                    </form>    
-            </div>    
-    )    
+                <div className="container-fluid">    
+                <h1>File Upload</h1>    
+                        <input type="file" onChange={setTheFile} />    
+                        <button className="btn btn-primary" onClick={submit}>Upload</button>    
+                        <div ref={canvasDiv}>
+                                <canvas ref={canvasRef}></canvas>
+                        </div>   
+                </div>    
+        )    
 }    
 export default FileUpload;
