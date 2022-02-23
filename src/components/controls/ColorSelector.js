@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { PatternContext } from '../../PatternContext';
 import ColorCell from '../ColorCell';
+import SelectorChoice from './SelectorChoice';
 import "../../styles.css";
 
 const ColorSelector = () => {
@@ -24,6 +25,7 @@ const ColorSelector = () => {
     return(
         <div>
             {colorCellsDisplay}
+            <SelectorChoice />
         </div>
     );
 }

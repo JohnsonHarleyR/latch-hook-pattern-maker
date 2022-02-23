@@ -13,7 +13,7 @@ const PatternProvider = ({children}) => {
 
     useEffect(() => {
         let colorCellsCopy = [...colorCells];
-        colorCellsCopy.push(createColorCell("color", "yellow", "Yellow", "", colorCells));
+        colorCellsCopy.push(createColorCell("color", "#FFFF00", "Yellow", "", colorCells));
         setColorCells(colorCellsCopy);
         setActiveColorCell(colorCellsCopy[0]);
     }, []);
