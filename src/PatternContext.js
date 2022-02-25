@@ -17,6 +17,8 @@ const PatternProvider = ({children}) => {
     const [image, setImage] = useState(null);
     const [imagePattern, setImagePattern] = useState(null);
     const [colorDifAllow, setColorDifAllow] = useState(30);
+    const [yAlign, setYAlign] = useState('start');
+    const [xAlign, setXAlign] = useState('start');
 
     useEffect(() => {
         let colorCellsCopy = [...colorCells];
@@ -61,11 +63,11 @@ const PatternProvider = ({children}) => {
         <PatternContext.Provider value={{colorCells, activeColorCell, 
         patternCells, patternXLength, patternYLength, isMouseDown,
         image, imagePattern, selectMode, selectCount,
-        comboColorCells, colorDifAllow,
+        comboColorCells, colorDifAllow, xAlign, yAlign,
         setColorCells, setActiveColorCell, setPatternCells, 
         setPatternXLength, setPatternYLength, setIsMouseDown, 
         setImage, setImagePattern, setSelectMode, setSelectCount, 
-        setComboColorCells, setColorDifAllow}}>
+        setComboColorCells, setColorDifAllow, setXAlign, setYAlign}}>
         {children}
     </PatternContext.Provider>
     );

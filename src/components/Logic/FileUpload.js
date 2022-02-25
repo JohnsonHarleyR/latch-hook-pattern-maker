@@ -6,10 +6,12 @@ import { getImageCellWidth, getCellColors, setPatternCellInfo, getListOfColors,
 const FileUpload = () => {  
         const {image, setImage, imagePattern, setImagePattern, patternCells,
                 setPatternCells, setPatternImage, patternXLength, colorDifAllow,
-                patternYLength, setColorCells, colorCells, setColorDifAllow} 
-                = useContext(PatternContext);
+                patternYLength, setColorCells, colorCells, setColorDifAllow, 
+                setXAlign, setYAlign, xAlign, yAlign} = useContext(PatternContext);
         const [loadingMessage, setLoadingMessage] = useState("");
         const difInput = useRef();
+        const xAlignInput = useRef();
+        const yAlignInput = useRef();
         const canvasDiv = useRef();
         const canvasRef = useRef();
         let ctx;
@@ -45,11 +47,20 @@ const FileUpload = () => {
                 setColorDifAllow(difInput.current.value);
         }
 
+        const changeXAlign = () => {
+                setXAlign(xAlignInput.current.value);
+        }
+
+        const changeYAlign = () => {
+                setYAlign(yAlignInput.current.value);
+        }
+
         useEffect(() => {
-                //canvasDiv.current.style.display = "none";
-                canvasDiv.current.style.display = "block";
+                canvasDiv.current.style.display = "none";
+                //canvasDiv.current.style.display = "block";
                 ctx = canvasRef.current.getContext("2d");
                 difInput.current.value = 30;
+                xAlignInput.current.value = 'start';
         }, []);
 
         useEffect(() => {
@@ -65,7 +76,9 @@ const FileUpload = () => {
                         // now do a function to calculate all the info inside this before setting it
                         ctx = canvasRef.current.getContext("2d");
                         let colorData = getCellColors(ctx, cellWidth, 
-                                patternXLength, patternYLength, colorDifAllow);
+                                patternXLength, patternYLength, colorDifAllow, 
+                                xAlign, yAlign, canvasRef.current.width, 
+                                canvasRef.current.height);
                         let listOfColors = colorData[1];
                         let cellColors = colorData[0];
                         newPatternImage.cellColors = cellColors;
@@ -80,8 +93,21 @@ const FileUpload = () => {
 
         return (    
                 <div className="container-fluid">    
-                <h1>File Upload</h1>    
+                <h2>File Upload</h2>    
                         {loadingMessage}
+                        <br></br>
+                        XAlign: 
+                        <select ref={xAlignInput} onChange={changeXAlign}>
+                                <option value="start">start</option>
+                                <option value="center">center</option>
+                                <option value="end">end</option>
+                        </select>
+                        YAlign: 
+                        <select ref={yAlignInput} onChange={changeYAlign}>
+                                <option value="start">start</option>
+                                <option value="center">center</option>
+                                <option value="end">end</option>
+                        </select>
                         <br></br>
                         Color Allowance<input type="number" ref={difInput} onChange={changeColorAllowance}/>
                         <br></br>

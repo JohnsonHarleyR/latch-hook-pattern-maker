@@ -92,16 +92,38 @@ const getColorRef = (color, listOfColors) => {
     return null;
 }
 
-export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow) => {
+const getStartPos = (alignment, fullLength, cellLength, cellCount) => {
+    if (alignment === "start") {
+        return 0;
+    }
+
+    let croppedLength = cellCount * cellLength;
+    if (alignment === "end") {
+        return fullLength - croppedLength - 1;
+    }
+
+    if (alignment === "center") {
+        let unusedLength = fullLength - croppedLength;
+        let padding = unusedLength / 2;
+        return padding - 1;
+    }
+
+    return 0;
+}
+
+export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow, 
+    xAlign, yAlign, xFullLength, yFullLength) => {
     let cellColors = [];
     let colorList = [];
     let colorListRGB = [];
     let listCount = 0;
+    let xStartAdd = getStartPos(xAlign, xFullLength, cellWidth, xCount);
+    let yStartAdd = getStartPos(yAlign, yFullLength, cellWidth, yCount);
     for (let y = 0; y < yCount; y++) {
-        let startY = y * cellWidth;
+        let startY = y * cellWidth + yStartAdd;
         let yRow = [];
         for (let x = 0; x < xCount; x++) {
-            let startX = x * cellWidth;
+            let startX = x * cellWidth + xStartAdd;
             let newColor = determineCellColor(ctx, startX, startY, cellWidth, cellWidth);
 
             // now get the difference with prev
