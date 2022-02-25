@@ -5,9 +5,11 @@ import { getImageCellWidth, getCellColors, setPatternCellInfo, getListOfColors,
         createColorCells, narrowListOfColors, convertRGBtoXYZ } from './ImageLogic';
 const FileUpload = () => {  
         const {image, setImage, imagePattern, setImagePattern, patternCells,
-                setPatternCells, setPatternImage, patternXLength, 
-                patternYLength, setColorCells, colorCells} = useContext(PatternContext);
+                setPatternCells, setPatternImage, patternXLength, colorDifAllow,
+                patternYLength, setColorCells, colorCells, setColorDifAllow} 
+                = useContext(PatternContext);
         const [loadingMessage, setLoadingMessage] = useState("");
+        const difInput = useRef();
         const canvasDiv = useRef();
         const canvasRef = useRef();
         let ctx;
@@ -39,10 +41,15 @@ const FileUpload = () => {
                 reader.readAsDataURL(e.target.files[0]);  
         }
 
+        const changeColorAllowance = () => {
+                setColorDifAllow(difInput.current.value);
+        }
+
         useEffect(() => {
                 //canvasDiv.current.style.display = "none";
                 canvasDiv.current.style.display = "block";
                 ctx = canvasRef.current.getContext("2d");
+                difInput.current.value = 30;
         }, []);
 
         useEffect(() => {
@@ -58,7 +65,7 @@ const FileUpload = () => {
                         // now do a function to calculate all the info inside this before setting it
                         ctx = canvasRef.current.getContext("2d");
                         let colorData = getCellColors(ctx, cellWidth, 
-                                patternXLength, patternYLength);
+                                patternXLength, patternYLength, colorDifAllow);
                         let listOfColors = colorData[1];
                         let cellColors = colorData[0];
                         newPatternImage.cellColors = cellColors;
@@ -75,6 +82,8 @@ const FileUpload = () => {
                 <div className="container-fluid">    
                 <h1>File Upload</h1>    
                         {loadingMessage}
+                        <br></br>
+                        Color Allowance<input type="number" ref={difInput} onChange={changeColorAllowance}/>
                         <br></br>
                         <input type="file" onChange={setTheFile} />    
                         {/* <button className="btn btn-primary" onClick={submit}>Upload</button>     */}

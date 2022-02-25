@@ -44,12 +44,12 @@ export const getListOfColors = (cellColors) => {
     return allColors;
 }
 
-export const narrowListOfColors = (listOfColors) => {
+export const narrowListOfColors = (listOfColors, colorDifAllow) => {
     let newList = [];
     listOfColors.forEach(color => {
         let isWithinRange = false;
         for (let i = 0; i < newList.length; i++) {
-            if (isWithinColorRange(newList[i], color)) {
+            if (isWithinColorRange(newList[i], color, colorDifAllow)) {
                 isWithinRange = true;
                 break;
             }
@@ -61,7 +61,7 @@ export const narrowListOfColors = (listOfColors) => {
     return newList;
 }
 
-const isWithinColorRange = (color1, color2) => {
+const isWithinColorRange = (color1, color2, colorDifAllow) => {
     let dif = getColorDifference(color1, color2);
     if (dif < colorDifAllow) {
         return true;
@@ -92,7 +92,7 @@ const getColorRef = (color, listOfColors) => {
     return null;
 }
 
-export const getCellColors = (ctx, cellWidth, xCount, yCount) => {
+export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow) => {
     let cellColors = [];
     let colorList = [];
     let colorListRGB = [];
@@ -108,7 +108,7 @@ export const getCellColors = (ctx, cellWidth, xCount, yCount) => {
             let similar = null;
             let refId = null;
             for (let i = 0; i < colorList.length; i++) {
-                let dif = getColorDifference(colorListRGB[i], newColor);
+                let dif = getColorDifference(colorListRGB[i], newColor, colorDifAllow);
                 if (dif < colorDifAllow) {
                     newColor = colorListRGB[i];
                     similar = colorList[i];
@@ -120,7 +120,7 @@ export const getCellColors = (ctx, cellWidth, xCount, yCount) => {
                 refId = `c${listCount}`;
                 colorList.push(
                     new ColorCellClass(refId, "color", "cell", 
-                    newColor.rgba, newColor.rgba, "")
+                    newColor.hex, newColor.rgba, "")
                 );
                 colorListRGB.push(newColor);
                 listCount++;
@@ -196,6 +196,7 @@ const getColorCounts = (ctx, startX, startY, xLength, yLength) => {
                     g: g,
                     b: b,
                     a: a,
+                    hex: rgbToHex(r,g,b),
                     count: 1
                 });
             }
@@ -203,6 +204,15 @@ const getColorCounts = (ctx, startX, startY, xLength, yLength) => {
     }
     return colorCounts;
 }
+
+const rgbToHex = (r, g, b) => {
+    return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`
+}
+
+const componentToHex = (c) => {
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
 
 const getColorDifference = (color1, color2) => {
     let R = color1.r - color2.r;

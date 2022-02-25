@@ -9,7 +9,6 @@ const Controls = () => {
     return (
         <div>
             <SizeChanger />
-
             <ColorSelector />
             <FileUpload />
         </div>

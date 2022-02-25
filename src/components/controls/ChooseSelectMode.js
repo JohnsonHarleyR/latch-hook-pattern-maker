@@ -26,7 +26,7 @@ const ChooseSelectMode = () => {
 
     return (
         <div>
-            <button ref={addMode} onClick={useAddMode}>Add Mode</button>
+            <button ref={addMode} onClick={useAddMode}>Add/Change Mode</button>
             <button ref={combineMode} onClick={useCombineMode}>Combine Mode</button>
         </div>
     );

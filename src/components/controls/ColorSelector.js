@@ -38,7 +38,9 @@ const ColorSelector = () => {
 
     return(
         <div>
+            <div style={{overflowY: "scroll", width: "250px", height: "300px"}}>
             {colorCellsDisplay}
+            </div>
             <ChooseSelectMode />
             {controlDisplay}
         </div>
