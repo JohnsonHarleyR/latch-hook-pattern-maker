@@ -16,6 +16,10 @@
     border: 2px solid blue;
 }
 
+.selected-main {
+    border: 2px solid #39FF14;
+}
+
 .top {
     border-top: 2px solid black;
 }

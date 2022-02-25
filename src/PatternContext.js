@@ -6,11 +6,16 @@ const PatternContext = createContext({colorCells: [], patternCells: [], activeCo
 const PatternProvider = ({children}) => {
     const [colorCells, setColorCells] = useState([]);
     const [activeColorCell, setActiveColorCell] = useState(null);
+    const [comboColorCells, setComboColorCells] = useState([]);
+    const [selectMode, setSelectMode] = useState("add");
+    const [selectCount, setSelectCount] = useState(0);
     const [patternCells, setPatternCells] = useState(null);
     const [patternXLength, setPatternXLength] = useState(40);
     const [patternYLength, setPatternYLength] = useState(40);
     const [isMouseDown, setIsMouseDown] = useState(false);
+
     const [image, setImage] = useState(null);
+    const [imagePattern, setImagePattern] = useState(null);
 
     useEffect(() => {
         let colorCellsCopy = [...colorCells];
@@ -54,10 +59,12 @@ const PatternProvider = ({children}) => {
     return (
         <PatternContext.Provider value={{colorCells, activeColorCell, 
         patternCells, patternXLength, patternYLength, isMouseDown,
-        image,
-    setColorCells, setActiveColorCell, setPatternCells, 
-    setPatternXLength, setPatternYLength, setIsMouseDown, 
-    setImage}}>
+        image, imagePattern, selectMode, selectCount,
+        comboColorCells,
+        setColorCells, setActiveColorCell, setPatternCells, 
+        setPatternXLength, setPatternYLength, setIsMouseDown, 
+        setImage, setImagePattern, setSelectMode, setSelectCount, 
+        setComboColorCells}}>
         {children}
     </PatternContext.Provider>
     );

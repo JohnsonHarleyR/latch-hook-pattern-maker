@@ -1,3 +1,13 @@
+export class PatternImage {
+    constructor(cellPixelWidth, xCount, yCount) {
+        this.cellPixelWidth = cellPixelWidth;
+        this.xCount = xCount;
+        this.yCount = yCount;
+        this.cellColors = [];
+        this.listOfColors = [];
+    }
+}
+
 export class CellClass {
     constructor(id, cellType, className, fillColor, symbol, xPos, yPos) {
         this.id = id;

@@ -2,11 +2,15 @@ import React, { useContext, useEffect, useState } from 'react';
 import { PatternContext } from '../../PatternContext';
 import ColorCell from '../ColorCell';
 import SelectorChoice from './SelectorChoice';
+import ChooseSelectMode from './ChooseSelectMode';
+import CombineCells from './CombineCells';
 import "../../styles.css";
 
 const ColorSelector = () => {
-    const {colorCells} = useContext(PatternContext);
+    const {colorCells, selectMode, setActiveColorCell, 
+        setComboColorCells} = useContext(PatternContext);
     const [colorCellsDisplay, setColorCellsDisplay] = useState([]);
+    const [controlDisplay, setControlDisplay] = useState(<SelectorChoice />);
 
     useEffect(() => {
         let newDisplay = [];
@@ -22,10 +26,21 @@ const ColorSelector = () => {
         setColorCellsDisplay(newDisplay);
     }, [colorCells]);
 
+    useEffect(() => {
+        setComboColorCells([]);
+        setActiveColorCell(null);
+        if (selectMode === "add") {
+            setControlDisplay(<SelectorChoice />);
+        } else if (selectMode === "combine") {
+            setControlDisplay(<CombineCells />)
+        }
+    }, [selectMode]);
+
     return(
         <div>
             {colorCellsDisplay}
-            <SelectorChoice />
+            <ChooseSelectMode />
+            {controlDisplay}
         </div>
     );
 }
