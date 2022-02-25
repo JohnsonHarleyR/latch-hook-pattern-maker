@@ -57,6 +57,14 @@ const SelectorChoice = () => {
         }
     }, [showMove]);
 
+    useEffect(() => {
+        if (colorCells.length > 1) {
+            deleteButton.current.disabled = false;
+        } else {
+            deleteButton.current.disabled = true;
+        }
+    })
+
     const changeColor = () => {
         setColor(selector.current.value);
     }
@@ -132,7 +140,7 @@ const SelectorChoice = () => {
     }
 
     const hitDeleteButton = () => {
-        if (activeColorCell !== null) {
+        if (activeColorCell !== null && colorCells.length > 1) {
             let index = null;
             let count = 0;
             colorCells.forEach(cell => {
@@ -156,9 +164,9 @@ const SelectorChoice = () => {
             <input type="color" ref={selector} onChange={changeColor}/>
             <input type="text" placeholder="Color Name" ref={nameInput}/>
             <button ref={defButton} onClick={hitDefButton}>{buttonText}</button>
-            <button ref={deleteButton} onClick={hitDeleteButton}>Delete</button>
             <button ref={moveUpButton} onClick={moveCellUp}>Move Up</button>
             <button ref={moveDownButton} onClick={moveCellDown}>Move Down</button>
+            <button ref={deleteButton} onClick={hitDeleteButton}>Delete</button>
             <br></br>
             {errorMessage}
         </div>

@@ -1,6 +1,8 @@
 import React, {useState, useEffect, createContext} from 'react';
 import { CellClass, PatternCellClass, ColorCellClass } from './classes/ComponentClasses';
 
+// TODO add ability to undo and redo steps
+
 const PatternContext = createContext({colorCells: [], patternCells: [], activeColorCell: null});
 
 const PatternProvider = ({children}) => {
@@ -13,6 +15,7 @@ const PatternProvider = ({children}) => {
     const [patternXLength, setPatternXLength] = useState(40);
     const [patternYLength, setPatternYLength] = useState(40);
     const [isMouseDown, setIsMouseDown] = useState(false);
+    const [allowCountUpdate, setAllowCountUpdate] = useState(true);
 
     const [image, setImage] = useState(null);
     const [imagePattern, setImagePattern] = useState(null);
@@ -22,7 +25,7 @@ const PatternProvider = ({children}) => {
 
     useEffect(() => {
         let colorCellsCopy = [...colorCells];
-        colorCellsCopy.push(createColorCell("color", "#FFFF00", "Yellow", "", colorCells));
+        colorCellsCopy.push(createColorCell("color", "#FFFFFF", "White", "", colorCells));
         setColorCells(colorCellsCopy);
         setActiveColorCell(colorCellsCopy[0]);
     }, []);
@@ -38,7 +41,13 @@ const PatternProvider = ({children}) => {
                     if (cellsCopy[y] && cellsCopy[y][x]) {
                         newCell = cellsCopy[y][x];
                     } else {
-                        newCell= createCell("pattern", "#fff", "", x, y, null);
+                        let fill;
+                        if (colorCells !== undefined && colorCells.length > 0) {
+                            fill = colorCells[0].fillColor;
+                        } else {
+                            fill = "#fff";
+                        }
+                        newCell= createCell("pattern", fill, "", x, y, "c0");
                     }
                     newRow.push(newCell);
                 }
@@ -64,10 +73,12 @@ const PatternProvider = ({children}) => {
         patternCells, patternXLength, patternYLength, isMouseDown,
         image, imagePattern, selectMode, selectCount,
         comboColorCells, colorDifAllow, xAlign, yAlign,
+        allowCountUpdate,
         setColorCells, setActiveColorCell, setPatternCells, 
         setPatternXLength, setPatternYLength, setIsMouseDown, 
         setImage, setImagePattern, setSelectMode, setSelectCount, 
-        setComboColorCells, setColorDifAllow, setXAlign, setYAlign}}>
+        setComboColorCells, setColorDifAllow, setXAlign, setYAlign,
+        setAllowCountUpdate}}>
         {children}
     </PatternContext.Provider>
     );

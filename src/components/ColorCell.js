@@ -6,7 +6,8 @@ const ColorCell = ({cell}) => {
 
     const {activeColorCell, setActiveColorCell, comboColorCells,
         patternCells, setPatternCells, selectMode, setComboColorCells,
-        isMouseDown, setIsMouseDown} = useContext(PatternContext);
+        isMouseDown, setIsMouseDown, colorCells, 
+        setColorCells} = useContext(PatternContext);
     const [isSelected, setIsSelected] = useState(false);
     const [isMainSelect, setIsMainSelect] = useState(false);
     const [cellClassName, setCellClassName] = useState(cell.className);

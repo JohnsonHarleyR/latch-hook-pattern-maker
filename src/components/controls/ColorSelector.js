@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { PatternContext } from '../../PatternContext';
 import ColorCell from '../ColorCell';
 import SelectorChoice from './SelectorChoice';
@@ -8,9 +8,12 @@ import "../../styles.css";
 
 const ColorSelector = () => {
     const {colorCells, selectMode, setActiveColorCell, 
-        setComboColorCells} = useContext(PatternContext);
+        setComboColorCells, setColorCells, patternCells, 
+        allowCountUpdate, setAllowCountUpdate} 
+        = useContext(PatternContext);
     const [colorCellsDisplay, setColorCellsDisplay] = useState([]);
     const [controlDisplay, setControlDisplay] = useState(<SelectorChoice />);
+    const updateBtn = useRef();
 
     useEffect(() => {
         let newDisplay = [];
@@ -18,7 +21,7 @@ const ColorSelector = () => {
             newDisplay.push(
                 <div key={`d-${cell.id}`} className="color-cell-row">
                     <ColorCell key={cell.id} cell={cell} />
-                    {cell.colorName}
+                    {cell.colorName} ({cell.count ? cell.count : "?"})
                     <br></br>
                 </div>
             );
@@ -36,8 +39,41 @@ const ColorSelector = () => {
         }
     }, [selectMode]);
 
+    useEffect(() => {
+        if (allowCountUpdate) {
+            updateBtn.current.disabled = false;
+        } else {
+            updateBtn.current.disabled = true;
+        }
+    }, [allowCountUpdate]);
+
+    const updateColorCounts = () => {
+        let cellsCopy = [...colorCells];
+        for (let i = 0; i < cellsCopy.length; i++) {
+            let count = countPatternInstances(cellsCopy[i]);
+            cellsCopy[i].count = count;
+        }
+        setColorCells(cellsCopy);
+        setAllowCountUpdate(false);
+    }
+
+    const countPatternInstances = (cell) => {
+        let count = 0;
+        for (let y = 0; y < patternCells.length; y++) {
+            let yRow = patternCells[y];
+            for (let x = 0; x < yRow.length; x++) {
+                if (patternCells[y][x].refId === cell.id) {
+                    count++;
+                }
+            }
+        }
+        return count;
+        
+    }
+
     return(
         <div>
+            <button onClick={updateColorCounts} ref={updateBtn}>Update Counts</button>
             <div style={{overflowY: "scroll", width: "250px", height: "300px"}}>
             {colorCellsDisplay}
             </div>

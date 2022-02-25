@@ -3,11 +3,15 @@ import { createColorCell, PatternContext } from '../../PatternContext';
 import { PatternImage } from '../../classes/ComponentClasses';
 import { getImageCellWidth, getCellColors, setPatternCellInfo, getListOfColors, 
         createColorCells, narrowListOfColors, convertRGBtoXYZ } from './ImageLogic';
+
+// TODO Make it so you don't have to choose a different image every time you want to upload.
+
 const FileUpload = () => {  
         const {image, setImage, imagePattern, setImagePattern, patternCells,
                 setPatternCells, setPatternImage, patternXLength, colorDifAllow,
                 patternYLength, setColorCells, colorCells, setColorDifAllow, 
-                setXAlign, setYAlign, xAlign, yAlign} = useContext(PatternContext);
+                setXAlign, setYAlign, xAlign, yAlign, setAllowCountUpdate,
+                setActiveColorCell} = useContext(PatternContext);
         const [loadingMessage, setLoadingMessage] = useState("");
         const difInput = useRef();
         const xAlignInput = useRef();
@@ -28,6 +32,7 @@ const FileUpload = () => {
 
         const setTheFile = (e) => {    
                 setLoadingMessage("loading image...");
+                setActiveColorCell(null);
                 ctx = canvasRef.current.getContext("2d");
                 let reader = new FileReader();
                 reader.onload = (event) => {
@@ -87,6 +92,7 @@ const FileUpload = () => {
                         setColorCells(listOfColors);
                         setPatternCellInfo(patternCells, setPatternCells, cellColors);
                         setLoadingMessage("");
+                        setAllowCountUpdate(true);
                 }
 
         }, [image]);

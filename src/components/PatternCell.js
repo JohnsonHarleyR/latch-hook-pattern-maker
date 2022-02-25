@@ -4,9 +4,9 @@ import "../styles.css";
 
 const PatternCell = ({cell}) => {
 
-    const {activeColorCell, setActiveColorCell, 
-        patternCells, setPatternCells, 
-        isMouseDown, setIsMouseDown} = useContext(PatternContext);
+    const {activeColorCell, setActiveColorCell, allowCountUpdate,
+        patternCells, setPatternCells, setAllowCountUpdate, colorCells,
+        setColorCells, isMouseDown, setIsMouseDown} = useContext(PatternContext);
     const [cellClassName, setCellClassName] = useState(cell.className);
 
     const clickCell = () => {
@@ -25,17 +25,23 @@ const PatternCell = ({cell}) => {
     }
 
     const changeColor = () => {
-        
+        let origColor = cell.fillColor;
+        let newColor = null;
         let patternCellsCopy = [...patternCells];
             let cellCopy = patternCellsCopy[cell.yPos][cell.xPos];
             if (activeColorCell !== null) {
                 cellCopy.fillColor = activeColorCell.fillColor;
                 cellCopy.refId = activeColorCell.id;
+                newColor = activeColorCell.fillColor;
             } else {
-                cellCopy.fillColor = "#fff";
-                cellCopy.refId = null;
+                let newColor = colorCells[0];
+                cellCopy.fillColor = newColor.fillColor;
+                cellCopy.refId = newColor.id;
             }
             setPatternCells(patternCellsCopy);
+            if (origColor !== newColor) {
+                setAllowCountUpdate(true);
+            }
     }
 
     return (
