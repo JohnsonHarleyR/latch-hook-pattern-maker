@@ -6,28 +6,38 @@ import { CellClass, PatternCellClass, ColorCellClass } from './classes/Component
 const PatternContext = createContext({colorCells: [], patternCells: [], activeColorCell: null});
 
 const PatternProvider = ({children}) => {
-    const [colorCells, setColorCells] = useState([]);
-    const [activeColorCell, setActiveColorCell] = useState(null);
-    const [comboColorCells, setComboColorCells] = useState([]);
-    const [selectMode, setSelectMode] = useState("add");
-    const [selectCount, setSelectCount] = useState(0);
-    const [patternCells, setPatternCells] = useState(null);
-    const [patternXLength, setPatternXLength] = useState(40);
-    const [patternYLength, setPatternYLength] = useState(40);
-    const [isMouseDown, setIsMouseDown] = useState(false);
-    const [allowCountUpdate, setAllowCountUpdate] = useState(true);
+    const [colorCells, setColorCells] = useState([]); // the cells used in the list of colors - referenced by pattern cells
+    const [activeColorCell, setActiveColorCell] = useState(null); // the selected color cell - selected by mouse
+    const [comboColorCells, setComboColorCells] = useState([]); // for the sake of combining color cells
+    const [selectMode, setSelectMode] = useState("add"); // add or combine mode
 
-    const [image, setImage] = useState(null);
-    const [imagePattern, setImagePattern] = useState(null);
-    const [colorDifAllow, setColorDifAllow] = useState(30);
-    const [yAlign, setYAlign] = useState('start');
-    const [xAlign, setXAlign] = useState('start');
+    const [unusedSymbols, setUnusedSymbols] = useState([
+        '⑂','⑃','@','-','♫','☽','☾','↝','≠',
+        '∷','ツ','♀','♂','•','∀','≣','∻','∅','⊡','≐','≑','≚','⍮',
+        '◒','◓','◎','⊙','ξ','σ','⊜','⊗','⊛','◍','ω',
+        '♡','♢','☋','⇩','+','?','/','>','<','=','~','☐','✰'
+    ]); // this is for adding symbols to color cells
+
+    const [patternCells, setPatternCells] = useState(null); // cells on the canvas
+    const [patternXLength, setPatternXLength] = useState(40); // the number of cells across
+    const [patternYLength, setPatternYLength] = useState(40); // the number of cells down
+
+    const [isMouseDown, setIsMouseDown] = useState(false);
+    const [allowCountUpdate, setAllowCountUpdate] = useState(true); // whether to show the button to show the count for each color
+
+    const [image, setImage] = useState(null); // uploaded image
+    const [imagePattern, setImagePattern] = useState(null); // a pattern created from an image
+    const [colorDifAllow, setColorDifAllow] = useState(30); // for adjusting tolerance in color similarity when mapping an immage
+    const [yAlign, setYAlign] = useState('start'); // for mapping an image onto the canvas
+    const [xAlign, setXAlign] = useState('start'); // how should the image be cropped, basically
 
     useEffect(() => {
+        let symbolsCopy = [...unusedSymbols];
         let colorCellsCopy = [...colorCells];
-        colorCellsCopy.push(createColorCell("color", "#FFFFFF", "White", "", colorCells));
+        colorCellsCopy.push(createColorCell("color", "#FFFFFF", "White", symbolsCopy.pop(), colorCells));
         setColorCells(colorCellsCopy);
         setActiveColorCell(colorCellsCopy[0]);
+        setUnusedSymbols(symbolsCopy);
     }, []);
 
     const createPatternCells = () => {
@@ -42,12 +52,15 @@ const PatternProvider = ({children}) => {
                         newCell = cellsCopy[y][x];
                     } else {
                         let fill;
+                        let symbol;
                         if (colorCells !== undefined && colorCells.length > 0) {
                             fill = colorCells[0].fillColor;
+                            symbol = colorCells[0].symbol;
                         } else {
                             fill = "#fff";
+                            symbol = '✰';
                         }
-                        newCell= createCell("pattern", fill, "", x, y, "c0");
+                        newCell= createCell("pattern", fill, symbol, x, y, "c0");
                     }
                     newRow.push(newCell);
                 }
@@ -71,17 +84,21 @@ const PatternProvider = ({children}) => {
     return (
         <PatternContext.Provider value={{colorCells, activeColorCell, 
         patternCells, patternXLength, patternYLength, isMouseDown,
-        image, imagePattern, selectMode, selectCount,
+        image, imagePattern, selectMode, unusedSymbols,
         comboColorCells, colorDifAllow, xAlign, yAlign,
         allowCountUpdate,
         setColorCells, setActiveColorCell, setPatternCells, 
         setPatternXLength, setPatternYLength, setIsMouseDown, 
-        setImage, setImagePattern, setSelectMode, setSelectCount, 
+        setImage, setImagePattern, setSelectMode, setUnusedSymbols,
         setComboColorCells, setColorDifAllow, setXAlign, setYAlign,
         setAllowCountUpdate}}>
         {children}
     </PatternContext.Provider>
     );
+}
+
+const assignSymbol = (colorAssigned, symbolsList) => {
+
 }
 
 export const createColorCell = (type, color, colorName, symbol, colorCells) => {

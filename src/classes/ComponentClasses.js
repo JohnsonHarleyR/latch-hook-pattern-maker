@@ -18,6 +18,7 @@ export class CellClass {
         this.xPos = xPos;
         this.yPos = yPos;
         this.colorName = "";
+        this.symbolColor = "#707070";
     }
 }
 

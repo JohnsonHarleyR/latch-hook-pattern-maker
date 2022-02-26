@@ -95,7 +95,7 @@ const ColorCell = ({cell}) => {
     }, [isSelected]);
 
     return (
-        <div style={{backgroundColor: cell.fillColor}} className={cellClassName} 
+        <div style={{backgroundColor: cell.fillColor, color: cell.symbolColor}} className={cellClassName} 
             onMouseDown={clickCell}>
             {cell.symbol}
         </div>

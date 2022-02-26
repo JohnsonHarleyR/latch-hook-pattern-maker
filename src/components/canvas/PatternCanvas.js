@@ -45,16 +45,19 @@ const PatternCanvas = () => {
                     } else {
                         // figure out the new color and symbol for the cell
                         let newColor = null;
+                        let newSymbolColor = null;
                         //let newSymbol = null;
                         colorCells.forEach(cCell => {
                             if (cCell.id === refId) {
                                 newColor = cCell.fillColor;
+                                newSymbolColor = cCell.symbolColor;
                                 //newSymbol = cCell.symbol;
                             }
                         });
                         //if (newColor !== null && newSymbol !== null) {
                         if (newColor !== null) {
                             cellsCopy[y][x].fillColor = newColor;
+                            cellsCopy[y][x].symbolColor = newSymbolColor;
                             //cellsCopy[y][x].symbol = symbol;
                         }
                     }

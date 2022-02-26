@@ -7,7 +7,8 @@ import "../../styles.css";
 const CombineCells = () => {
     const {colorCells, setColorCells, activeColorCell,
         setActiveColorCell, comboColorCells, setComboColorCells,
-        patternCells, setPatternCells} 
+        patternCells, setPatternCells, unusedSymbols,
+        setUnusedSymbols} 
         = useContext(PatternContext);
 
     const combineCells = () => {
@@ -21,6 +22,7 @@ const CombineCells = () => {
         let cellsCopy = [...patternCells];
         let activeColor = activeColorCell.fillColor;
         let activeRefId = activeColorCell.id;
+        let activeSymbol = activeColorCell.symbol;
         for (let y = 0; y < cellsCopy.length; y++) {
             let yRow = cellsCopy[y];
             for (let x = 0; x < yRow.length; x++) {
@@ -29,6 +31,7 @@ const CombineCells = () => {
                     if (cellsCopy[y][x].refId === comboColorCell.id) {
                         cellsCopy[y][x].fillColor = activeColor;
                         cellsCopy[y][x].refId = activeRefId;
+                        cellsCopy[y][x].symbol = activeSymbol;
                     }
                 }
             }
@@ -37,13 +40,18 @@ const CombineCells = () => {
 
         // once done, delete all combo cells from color cell list
         let deleteCellIds = [];
-        comboColorCells.forEach(cell => { deleteCellIds.push(cell.id); });
+        let symbolsCopy = [...unusedSymbols];
+        comboColorCells.forEach(cell => { deleteCellIds.push(cell.id);
+            symbolsCopy.push(cell.symbol);});
         let newColorCellList = [];
         colorCells.forEach(cell => {
             if (!deleteCellIds.includes(cell.id)) {
                 newColorCellList.push(cell);
             }
         })
+
+        // set unused symbols to have removed symbols
+        setUnusedSymbols(symbolsCopy);
 
         // before setting new color cell list, remove all combo cells - then set list
         setComboColorCells([]);

@@ -4,13 +4,16 @@ import "../../styles.css";
 
 const SelectorChoice = () => {
     const {colorCells, setColorCells, 
-        activeColorCell, setActiveColorCell} = useContext(PatternContext);
-    const [color, setColor] = useState("#ffffff")
+        activeColorCell, setActiveColorCell, 
+        unusedSymbols, setUnusedSymbols} = useContext(PatternContext);
+    const [color, setColor] = useState("#ffffff");
+    const [symbolColor, setSymbolColor] = useState("#707070");
     const [buttonText, setButtonText] = useState("Add");
     const [showDelete, setShowDelete] = useState(false);
     const [showMove, setShowMove] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const selector = useRef();
+    const symbolColorSelector = useRef();
     const nameInput = useRef();
     const defButton = useRef();
     const deleteButton = useRef();
@@ -19,6 +22,7 @@ const SelectorChoice = () => {
 
     useEffect(() => {
         selector.current.value = "#ffffff";
+        symbolColorSelector.current.value = "#707070";
     }, []);
 
     useEffect(() => {
@@ -28,6 +32,7 @@ const SelectorChoice = () => {
             setShowDelete(true);
             nameInput.current.value = activeColorCell.colorName;
             selector.current.value = activeColorCell.fillColor;
+            symbolColorSelector.current.value = activeColorCell.symbolColor;
             if (colorCells.length > 1) {
                 setShowMove(true);
             }
@@ -67,6 +72,20 @@ const SelectorChoice = () => {
 
     const changeColor = () => {
         setColor(selector.current.value);
+    }
+
+    const changeSymbolColor = () => {
+        setSymbolColor(symbolColorSelector.current.value);
+    }
+
+    const getNextSymbol = () => {
+        if (unusedSymbols.length === 0) {
+            return "!";
+        }
+        let symbolsCopy = [...unusedSymbols];
+        let newSymbol = symbolsCopy.pop();
+        setUnusedSymbols(symbolsCopy);
+        return newSymbol;
     }
 
     const getActiveIndex = () => {
@@ -127,6 +146,7 @@ const SelectorChoice = () => {
                 let newCell = cellsCopy[index];
                 newCell.colorName = newName;
                 newCell.fillColor = color;
+                newCell.symbolColor = symbolColor;
                 cellsCopy[index] = newCell;
                 setActiveColorCell(cellsCopy[index])
                 setColorCells(cellsCopy);
@@ -134,7 +154,9 @@ const SelectorChoice = () => {
         } else {
             setErrorMessage("");
             let cellsCopy = [...colorCells];
-            cellsCopy.push(createColorCell("color", color, newName, "", colorCells));
+            let newCell = createColorCell("color", color, newName, getNextSymbol(), colorCells);
+            newCell.symbolColor = symbolColor;
+            cellsCopy.push(newCell);
             setColorCells(cellsCopy);
         }
     }
@@ -152,8 +174,13 @@ const SelectorChoice = () => {
             if (index !== null) {
                 setActiveColorCell(null);
                 let cellsCopy = [...colorCells];
+                let cellSymbol = cellsCopy[index].symbol;
                 cellsCopy.splice(index, 1);
                 setColorCells(cellsCopy);
+
+                let symbolsCopy = [...unusedSymbols];
+                symbolsCopy.push(cellSymbol);
+                setUnusedSymbols(symbolsCopy);
             }
             
         }
@@ -163,6 +190,8 @@ const SelectorChoice = () => {
         <div>
             <input type="color" ref={selector} onChange={changeColor}/>
             <input type="text" placeholder="Color Name" ref={nameInput}/>
+            <br></br>
+            Symbol color: <input type="color" ref={symbolColorSelector} onChange={changeSymbolColor}/>
             <button ref={defButton} onClick={hitDefButton}>{buttonText}</button>
             <button ref={moveUpButton} onClick={moveCellUp}>Move Up</button>
             <button ref={moveDownButton} onClick={moveCellDown}>Move Down</button>

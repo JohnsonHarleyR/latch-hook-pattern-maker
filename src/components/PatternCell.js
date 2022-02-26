@@ -11,12 +11,12 @@ const PatternCell = ({cell}) => {
 
     const clickCell = () => {
         setIsMouseDown(true);
-        changeColor();
+        changeColorAndSymbol();
     }
 
     const dragOverCell = () => {
         if (isMouseDown) {
-            changeColor();
+            changeColorAndSymbol();
         }
     }
 
@@ -24,7 +24,7 @@ const PatternCell = ({cell}) => {
         setIsMouseDown(false);
     }
 
-    const changeColor = () => {
+    const changeColorAndSymbol = () => {
         let origColor = cell.fillColor;
         let newColor = null;
         let patternCellsCopy = [...patternCells];
@@ -32,11 +32,14 @@ const PatternCell = ({cell}) => {
             if (activeColorCell !== null) {
                 cellCopy.fillColor = activeColorCell.fillColor;
                 cellCopy.refId = activeColorCell.id;
+                cellCopy.symbol = activeColorCell.symbol;
+                cellCopy.symbolColor = activeColorCell.symbolColor;
                 newColor = activeColorCell.fillColor;
             } else {
                 let newColor = colorCells[0];
                 cellCopy.fillColor = newColor.fillColor;
                 cellCopy.refId = newColor.id;
+                cellCopy.symbol = newColor.symbol;
             }
             setPatternCells(patternCellsCopy);
             if (origColor !== newColor) {
@@ -45,7 +48,7 @@ const PatternCell = ({cell}) => {
     }
 
     return (
-        <div style={{backgroundColor: cell.fillColor}} className={cellClassName} 
+        <div style={{backgroundColor: cell.fillColor, color: cell.symbolColor}} className={cellClassName} 
             onMouseDown={clickCell} onMouseOver={dragOverCell} 
             onMouseUp={releaseMouse}>
             {cell.symbol}
