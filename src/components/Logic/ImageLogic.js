@@ -18,15 +18,23 @@ export const getImageCellWidth =
     }
 }
 
-export const createColorCells = (listOfColors) => {
+export const createColorCells = (listOfColors, unusedSymbols, setUnusedSymbols) => {
     let colorCells = [];
     let newNumber = 0;
+    let symbolsCopy = [...unusedSymbols];
     listOfColors.forEach(color => {
         let id = `c${newNumber}`;
-        let newCell = new ColorCellClass(id, "color", "cell", color, color, "");
+        let newSymbol;
+        if (symbolsCopy.length === 0) {
+            newSymbol = "!";
+        } else {
+            newSymbol = symbolsCopy.pop();
+        }
+        let newCell = new ColorCellClass(id, "color", "cell", color, color, newSymbol);
         colorCells.push(newCell);
         newNumber++;
     });
+    setUnusedSymbols(symbolsCopy);
     return colorCells;
 }
 
@@ -69,18 +77,28 @@ const isWithinColorRange = (color1, color2, colorDifAllow) => {
     return false;
 }
 
-export const setPatternCellInfo = (patternCells, setPatternCells, newColors) => {
+export const setPatternCellInfo = (patternCells, setPatternCells, newColors, listOfColors) => {
     let cellsCopy = [...patternCells];
     for (let y = 0; y < cellsCopy.length; y++) {
         let yRow = cellsCopy[y];
         for (let x = 0; x < yRow.length; x++) {
             let newColor = newColors[y][x].color;
             let colorRef = newColors[y][x].refId;
+            let symbol = newColors[y][x].symbol;
             yRow[x].fillColor = newColor;
             yRow[x].refId = colorRef;
+            yRow[x].symbol = symbol;
         }
     }
     setPatternCells(cellsCopy);
+}
+
+const getNewSymbol = (refId, listOfColors) => {
+    listOfColors.forEach(color => {
+        if (color.id === refId) {
+            return color.symbol;
+        }
+    })
 }
 
 const getColorRef = (color, listOfColors) => {
@@ -112,7 +130,8 @@ const getStartPos = (alignment, fullLength, cellLength, cellCount) => {
 }
 
 export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow, 
-    xAlign, yAlign, xFullLength, yFullLength) => {
+    xAlign, yAlign, xFullLength, yFullLength, unusedSymbols, setUnusedSymbols) => {
+    let symbolsCopy = [...unusedSymbols];
     let cellColors = [];
     let colorList = [];
     let colorListRGB = [];
@@ -129,30 +148,38 @@ export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow,
             // now get the difference with prev
             let similar = null;
             let refId = null;
+            let newSymbol = null;
             for (let i = 0; i < colorList.length; i++) {
                 let dif = getColorDifference(colorListRGB[i], newColor, colorDifAllow);
                 if (dif < colorDifAllow) {
                     newColor = colorListRGB[i];
                     similar = colorList[i];
                     refId = colorList[i].id;
+                    newSymbol = colorList[i].symbol;
                     break;
                 }
             }
             if (!similar) {
                 refId = `c${listCount}`;
+                if (symbolsCopy.length === 0) {
+                    newSymbol = "!";
+                } else {
+                    newSymbol = symbolsCopy.pop();
+                }
                 colorList.push(
                     new ColorCellClass(refId, "color", "cell", 
-                    newColor.hex, newColor.rgba, "")
+                    newColor.hex, newColor.rgba, newSymbol)
                 );
                 colorListRGB.push(newColor);
                 listCount++;
             }
 
 
-            yRow.push({rgba: newColor.rgba, refId: refId });
+            yRow.push({rgba: newColor.rgba, refId: refId, symbol: newSymbol });
         }
         cellColors.push(yRow);
     }
+    setUnusedSymbols(symbolsCopy);
     return [cellColors, colorList];
 }
 

@@ -11,7 +11,8 @@ const FileUpload = () => {
                 setPatternCells, setPatternImage, patternXLength, colorDifAllow,
                 patternYLength, setColorCells, colorCells, setColorDifAllow, 
                 setXAlign, setYAlign, xAlign, yAlign, setAllowCountUpdate,
-                setActiveColorCell} = useContext(PatternContext);
+                setActiveColorCell, unusedSymbols, 
+                setUnusedSymbols} = useContext(PatternContext);
         const [loadingMessage, setLoadingMessage] = useState("");
         const difInput = useRef();
         const xAlignInput = useRef();
@@ -78,19 +79,25 @@ const FileUpload = () => {
                                 patternXLength,
                                 patternYLength,
                         );
+                        // add all current list symbols back to the unused symbols list
+                        let symbolsCopy = [...unusedSymbols];
+                        for (let i = 0; i < colorCells.length; i++) {
+                                symbolsCopy.push(colorCells[i].symbol);
+                        }
                         // now do a function to calculate all the info inside this before setting it
                         ctx = canvasRef.current.getContext("2d");
                         let colorData = getCellColors(ctx, cellWidth, 
                                 patternXLength, patternYLength, colorDifAllow, 
                                 xAlign, yAlign, canvasRef.current.width, 
-                                canvasRef.current.height);
+                                canvasRef.current.height, symbolsCopy,
+                                setUnusedSymbols);
                         let listOfColors = colorData[1];
                         let cellColors = colorData[0];
                         newPatternImage.cellColors = cellColors;
                         newPatternImage.listOfColors = listOfColors;
                         setImagePattern(newPatternImage);
                         setColorCells(listOfColors);
-                        setPatternCellInfo(patternCells, setPatternCells, cellColors);
+                        setPatternCellInfo(patternCells, setPatternCells, cellColors, listOfColors);
                         setLoadingMessage("");
                         setAllowCountUpdate(true);
                 }
