@@ -18,6 +18,15 @@ export const getImageCellWidth =
     }
 }
 
+export const getRecommendedSize = (imgWidth, imgHeight) => {
+    let recommededSizes = [];
+    let ratio = imgWidth / imgHeight;
+}
+
+export const getRatio = (height, width) => {
+    return Math.round(height / width, 3);
+}
+
 export const createColorCells = (listOfColors, unusedSymbols, setUnusedSymbols) => {
     let colorCells = [];
     let newNumber = 0;

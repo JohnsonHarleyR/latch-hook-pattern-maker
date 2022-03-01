@@ -12,10 +12,11 @@ const PatternProvider = ({children}) => {
     const [selectMode, setSelectMode] = useState("add"); // add or combine mode
 
     const [unusedSymbols, setUnusedSymbols] = useState([
+        '☐','⊡','◒','◓','◎','⊙','/','>','<','=','~',
+        '∷','ツ','♀','♂','•','∀','≣','∻','∅','≐','≑','≚','⍮',
         '⑂','⑃','@','-','♫','☽','☾','↝','≠',
-        '∷','ツ','♀','♂','•','∀','≣','∻','∅','⊡','≐','≑','≚','⍮',
-        '◒','◓','◎','⊙','ξ','σ','⊜','⊗','⊛','◍','ω',
-        '♡','♢','☋','⇩','+','?','/','>','<','=','~','☐','✰'
+        'ξ','σ','⊜','⊗','⊛','◍','ω',
+        '♡','♢','☋','⇩','+','?','✰'
     ]); // this is for adding symbols to color cells
 
     const [patternCells, setPatternCells] = useState(null); // cells on the canvas

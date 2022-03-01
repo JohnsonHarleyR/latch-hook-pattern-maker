@@ -8,11 +8,13 @@ const SelectorChoice = () => {
         unusedSymbols, setUnusedSymbols} = useContext(PatternContext);
     const [color, setColor] = useState("#ffffff");
     const [symbolColor, setSymbolColor] = useState("#707070");
+    const [symbol, setSymbol] = useState('!');
     const [buttonText, setButtonText] = useState("Add");
     const [showDelete, setShowDelete] = useState(false);
     const [showMove, setShowMove] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const selector = useRef();
+    const symbolSelector = useRef();
     const symbolColorSelector = useRef();
     const nameInput = useRef();
     const defButton = useRef();
@@ -20,12 +22,16 @@ const SelectorChoice = () => {
     const moveUpButton = useRef();
     const moveDownButton = useRef();
 
+    const [symbolOptions, setSymbolOptions] = useState([]);
+
     useEffect(() => {
         selector.current.value = "#ffffff";
         symbolColorSelector.current.value = "#707070";
+        symbolSelector.current.value = "!";
     }, []);
 
     useEffect(() => {
+        setSymbolOptions(getSymbolOptions);
         if (activeColorCell !== null) {
             setColor(activeColorCell.fillColor);
             setButtonText("Change");
@@ -70,8 +76,27 @@ const SelectorChoice = () => {
         }
     })
 
+    useEffect(() => {
+        if (unusedSymbols && symbolOptions) {
+            let newOptions = getSymbolOptions();
+            setSymbolOptions(newOptions);
+            symbolSelector.current.value = newOptions[0].value;
+        }
+    }, [unusedSymbols]);
+
+    useEffect(() => {
+        if (symbolOptions && symbolOptions.length > 0) {
+            symbolSelector.current.value = symbolOptions[0].value;
+            setSymbol(symbolOptions[0].value);
+        }
+    }, [symbolOptions]);
+
     const changeColor = () => {
         setColor(selector.current.value);
+    }
+
+    const changeSymbol = () => {
+        setSymbol(symbolSelector.current.value);
     }
 
     const changeSymbolColor = () => {
@@ -86,6 +111,56 @@ const SelectorChoice = () => {
         let newSymbol = symbolsCopy.pop();
         setUnusedSymbols(symbolsCopy);
         return newSymbol;
+    }
+
+    const removeSymbolFromUnused = (symbolToAddBack) => {
+        let unusedCopy = [...unusedSymbols];
+        let symbolIndex = null;
+        for (let i = 0; i < unusedCopy.length; i++) {
+            if (unusedCopy[i] === symbol) {
+                symbolIndex = i;
+                break;
+            }
+        }
+        if (symbolIndex !== null) {
+            unusedCopy.splice(symbolIndex, 1);
+            if (symbolToAddBack) {
+                unusedCopy.push(symbolToAddBack);
+
+            }
+            setUnusedSymbols(unusedCopy);
+        }
+    }
+
+    const getSymbolOptions = () => {
+        let newSymbolOptions = [];
+        unusedSymbols.forEach(s => {
+            newSymbolOptions.push({
+                label: s,
+                value: s
+            });
+        });
+        if (activeColorCell !== null) {
+            newSymbolOptions.unshift({
+                label: activeColorCell.symbol,
+                value: activeColorCell.symbol
+            });
+        }
+        if (newSymbolOptions.length === 0) {
+            newSymbolOptions.push("!");
+        }
+        return newSymbolOptions;
+    }
+
+    const mapSymbolOptions = () => {
+        let mapped = [<option key="!" value="!">!</option>];
+        if (symbolOptions) {
+            mapped = [];
+            mapped = symbolOptions.map((option => {
+                return (<option key={`${option.value}`} value={option.value}>{option.label}</option>)
+            }));
+        }
+        return mapped;
     }
 
     const getActiveIndex = () => {
@@ -144,20 +219,24 @@ const SelectorChoice = () => {
             });
             if (index !== null) {
                 let newCell = cellsCopy[index];
+                let originalSymbol = newCell.symbol;
                 newCell.colorName = newName;
                 newCell.fillColor = color;
+                newCell.symbol = symbol;
                 newCell.symbolColor = symbolColor;
                 cellsCopy[index] = newCell;
                 setActiveColorCell(cellsCopy[index])
                 setColorCells(cellsCopy);
+                removeSymbolFromUnused(originalSymbol);
             }
         } else {
             setErrorMessage("");
             let cellsCopy = [...colorCells];
-            let newCell = createColorCell("color", color, newName, getNextSymbol(), colorCells);
+            let newCell = createColorCell("color", color, newName, symbol, colorCells);
             newCell.symbolColor = symbolColor;
             cellsCopy.push(newCell);
             setColorCells(cellsCopy);
+            removeSymbolFromUnused();
         }
     }
 
@@ -191,6 +270,11 @@ const SelectorChoice = () => {
             <input type="color" ref={selector} onChange={changeColor}/>
             <input type="text" placeholder="Color Name" ref={nameInput}/>
             <br></br>
+            Symbol: <select onChange={changeSymbol} ref={symbolSelector}>
+                {symbolOptions ? symbolOptions.map((option => {
+                    return (<option key={`${option.value}`} value={option.value}>{option.label}</option>)
+                })) : <option key="!" value="!">!</option>}
+            </select>
             Symbol color: <input type="color" ref={symbolColorSelector} onChange={changeSymbolColor}/>
             <button ref={defButton} onClick={hitDefButton}>{buttonText}</button>
             <button ref={moveUpButton} onClick={moveCellUp}>Move Up</button>
