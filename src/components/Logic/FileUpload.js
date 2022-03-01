@@ -2,7 +2,10 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import { createColorCell, PatternContext } from '../../PatternContext';
 import { PatternImage } from '../../classes/ComponentClasses';
 import { getImageCellWidth, getCellColors, setPatternCellInfo, getListOfColors, 
-        createColorCells, narrowListOfColors, convertRGBtoXYZ } from './ImageLogic';
+        createColorCells, narrowListOfColors, convertRGBtoXYZ, 
+        getCellColorsSelectMode, 
+        setPatternCellInfoSelectorMode} from './ImageLogic';
+import ImageModal from './ImageModal';
 
 // TODO Make it so you don't have to choose a different image every time you want to upload.
 
@@ -14,22 +17,17 @@ const FileUpload = () => {
                 setActiveColorCell, unusedSymbols, 
                 setUnusedSymbols} = useContext(PatternContext);
         const [loadingMessage, setLoadingMessage] = useState("");
+
+        const [uploadMode, setUploadMode] = useState("selector");
+        const [showImageModal, setShowImageModal] = useState(false);
+        const [isFinishedSelectingColors, setIsFinishedSelectingColors] = useState(false);
+
         const difInput = useRef();
         const xAlignInput = useRef();
         const yAlignInput = useRef();
         const canvasDiv = useRef();
         const canvasRef = useRef();
         let ctx;
-
-        // test method
-        useEffect(() => {
-                let color = {
-                        r: 55,
-                        g: 0,
-                        b: 0
-                };
-                console.log(convertRGBtoXYZ(color));
-        }, []);
 
         const setTheFile = (e) => {    
                 setLoadingMessage("loading image...");
@@ -71,6 +69,20 @@ const FileUpload = () => {
 
         useEffect(() => {
                 if (image) {
+                        
+                        // do depending on mode
+                        if (uploadMode === "normal") {
+                                normalModeSet();
+                        } else if (uploadMode === "selector") {
+                                setShowImageModal(true);
+                        }
+                }
+
+        }, [image]);
+
+        useEffect(() => {
+                if (isFinishedSelectingColors === true) {
+                        setIsFinishedSelectingColors(false);
                         let cellWidth = getImageCellWidth(canvasRef.current.width, 
                                 canvasRef.current.height, patternXLength, 
                                 patternYLength);
@@ -86,23 +98,53 @@ const FileUpload = () => {
                         }
                         // now do a function to calculate all the info inside this before setting it
                         ctx = canvasRef.current.getContext("2d");
-                        let colorData = getCellColors(ctx, cellWidth, 
+        
+                        let colorData = getCellColorsSelectMode(ctx, cellWidth, 
                                 patternXLength, patternYLength, colorDifAllow, 
                                 xAlign, yAlign, canvasRef.current.width, 
-                                canvasRef.current.height, symbolsCopy,
-                                setUnusedSymbols);
-                        let listOfColors = colorData[1];
-                        let cellColors = colorData[0];
-                        newPatternImage.cellColors = cellColors;
-                        newPatternImage.listOfColors = listOfColors;
+                                canvasRef.current.height, colorCells);
+                        newPatternImage.cellColors = colorData;
+                        newPatternImage.listOfColors = [...colorCells];
                         setImagePattern(newPatternImage);
-                        setColorCells(listOfColors);
-                        setPatternCellInfo(patternCells, setPatternCells, cellColors, listOfColors);
+                        setPatternCellInfoSelectorMode(patternCells, setPatternCells, colorData);
                         setLoadingMessage("");
                         setAllowCountUpdate(true);
                 }
+        }, [isFinishedSelectingColors])
 
-        }, [image]);
+        const normalModeSet = () => {
+                let cellWidth = getImageCellWidth(canvasRef.current.width, 
+                        canvasRef.current.height, patternXLength, 
+                        patternYLength);
+                let newPatternImage = new PatternImage(
+                        cellWidth,
+                        patternXLength,
+                        patternYLength,
+                );
+                // add all current list symbols back to the unused symbols list
+                let symbolsCopy = [...unusedSymbols];
+                for (let i = 0; i < colorCells.length; i++) {
+                        symbolsCopy.push(colorCells[i].symbol);
+                }
+                // now do a function to calculate all the info inside this before setting it
+                ctx = canvasRef.current.getContext("2d");
+
+                let colorData = getCellColors(ctx, cellWidth, 
+                        patternXLength, patternYLength, colorDifAllow, 
+                        xAlign, yAlign, canvasRef.current.width, 
+                        canvasRef.current.height, symbolsCopy,
+                        setUnusedSymbols);
+                let listOfColors = colorData[1];
+                let cellColors = colorData[0];
+                newPatternImage.cellColors = cellColors;
+                newPatternImage.listOfColors = listOfColors;
+                setImagePattern(newPatternImage);
+                setColorCells(listOfColors);
+                setPatternCellInfo(patternCells, setPatternCells, cellColors, listOfColors);
+                setLoadingMessage("");
+                setAllowCountUpdate(true);
+        }
+        
 
         return (    
                 <div className="container-fluid">    
@@ -129,6 +171,8 @@ const FileUpload = () => {
                         <div ref={canvasDiv}>
                                 <canvas ref={canvasRef}></canvas>
                         </div>   
+                        <ImageModal image={image} uploadMode={uploadMode} setIsFinished={setIsFinishedSelectingColors}
+                                showImageModal={showImageModal} setShowImageModal={setShowImageModal} />
                 </div>    
         )    
 }    

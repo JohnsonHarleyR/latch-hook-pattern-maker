@@ -93,6 +93,22 @@ export const setPatternCellInfo = (patternCells, setPatternCells, newColors, lis
     setPatternCells(cellsCopy);
 }
 
+export const setPatternCellInfoSelectorMode = (patternCells, setPatternCells, newColors) => {
+    let cellsCopy = [...patternCells];
+    for (let y = 0; y < cellsCopy.length; y++) {
+        let yRow = cellsCopy[y];
+        for (let x = 0; x < yRow.length; x++) {
+            let newColor = newColors[y][x].color;
+            let colorRef = newColors[y][x].refId;
+            let symbol = newColors[y][x].symbol;
+            yRow[x].fillColor = newColor;
+            yRow[x].refId = colorRef;
+            yRow[x].symbol = symbol;
+        }
+    }
+    setPatternCells(cellsCopy);
+}
+
 const getNewSymbol = (refId, listOfColors) => {
     listOfColors.forEach(color => {
         if (color.id === refId) {
@@ -143,7 +159,7 @@ export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow,
         let yRow = [];
         for (let x = 0; x < xCount; x++) {
             let startX = x * cellWidth + xStartAdd;
-            let newColor = determineCellColor(ctx, startX, startY, cellWidth, cellWidth);
+            let newColor = determineCellColor(ctx, startX, startY, cellWidth, cellWidth, colorDifAllow);
 
             // now get the difference with prev
             let similar = null;
@@ -183,8 +199,48 @@ export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow,
     return [cellColors, colorList];
 }
 
-const determineCellColor = (ctx, startX, startY, xLength, yLength) => {
-    let colorCounts = getColorCounts(ctx, startX, startY, xLength, yLength);
+export const getClosestColor = (cellColors, newColor) => {
+    let leastDif = null;
+    let closestColor = null;
+    cellColors.forEach(cellColor => {
+        let cellRgb = hexToRgb(cellColor.fillColor);
+        let colorDif = getColorDifference(cellRgb, newColor);
+        if (leastDif === null || colorDif < leastDif) {
+            closestColor = {
+                color: cellColor.fillColor,
+                refId: cellColor.id,
+                symbol: cellColor.symbol
+            };
+            leastDif = colorDif;
+        }
+    });
+    return closestColor;
+}
+
+export const getCellColorsSelectMode = (ctx, cellWidth, xCount, yCount, colorDifAllow, 
+    xAlign, yAlign, xFullLength, yFullLength, colorCells) => {
+    let cellColors = [];
+    let xStartAdd = getStartPos(xAlign, xFullLength, cellWidth, xCount);
+    let yStartAdd = getStartPos(yAlign, yFullLength, cellWidth, yCount);
+    for (let y = 0; y < yCount; y++) {
+        let startY = y * cellWidth + yStartAdd;
+        let yRow = [];
+        for (let x = 0; x < xCount; x++) {
+            let startX = x * cellWidth + xStartAdd;
+            // get the main color of the cell
+            let newColor = determineCellColor(ctx, startX, startY, cellWidth, cellWidth, colorDifAllow);
+
+            // now get the closest cell color
+            let closestColor = getClosestColor(colorCells, newColor);
+            yRow.push(closestColor);
+        }
+        cellColors.push(yRow);
+    }
+    return cellColors;
+}
+
+const determineCellColor = (ctx, startX, startY, xLength, yLength, colorDifAllow) => {
+    let colorCounts = getColorCounts(ctx, startX, startY, xLength, yLength, colorDifAllow);
     let highest = null;
     let highestCount = 0;
     colorCounts.forEach(color => {
@@ -205,7 +261,7 @@ const determineCellColor = (ctx, startX, startY, xLength, yLength) => {
 //     let bSq = Math.pow(bDif, 2);
 // }
 
-const getColorCounts = (ctx, startX, startY, xLength, yLength) => {
+const getColorCounts = (ctx, startX, startY, xLength, yLength, colorDifAllow) => {
     let colorCounts = [];
     // let colorDifs = [];
     for (let y = startY; y < (startY + yLength); y++) {
@@ -218,41 +274,48 @@ const getColorCounts = (ctx, startX, startY, xLength, yLength) => {
             let b = data[2];
             let a = data[3] / 255;
             let rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
+            let newCount = {
+                rgba: rgba,
+                r: r,
+                g: g,
+                b: b,
+                a: a,
+                hex: rgbToHex(r,g,b),
+                count: 1
+            };
 
             let doesExist = false;
             for (let i = 0; i < colorCounts.length; i++) {
-                //////////////
-                // colorDifs.push(getColorDifference(colorCounts[i], {
-                //     rgba: rgba,
-                //     r: r,
-                //     g: g,
-                //     b: b,
-                //     a: a,
-                //     count: 1
-                // }));
-                //////////////
                 if (colorCounts[i].rgba === rgba) {
                     doesExist = true;
                     colorCounts[i].count++;
                     break;
                 }
+                // let colorDif = getColorDifference(colorCounts[i], newCount);
+                // if (colorCounts[i].rgba === rgba || 
+                //     colorDif < colorDifAllow) {
+                //     doesExist = true;
+                //     colorCounts[i].count++;
+                //     break;
+                // }
             }
             
             if (!doesExist) {
-                colorCounts.push({
-                    rgba: rgba,
-                    r: r,
-                    g: g,
-                    b: b,
-                    a: a,
-                    hex: rgbToHex(r,g,b),
-                    count: 1
-                });
+                colorCounts.push(newCount);
             }
         }
     }
     return colorCounts;
 }
+
+const hexToRgb = (hex) => {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
 
 const rgbToHex = (r, g, b) => {
     return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`
