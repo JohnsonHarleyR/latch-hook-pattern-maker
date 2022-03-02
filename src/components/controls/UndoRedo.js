@@ -5,10 +5,10 @@ const UndoRedo = () => {
 
     // TODO fix this so that the copies of the data aren't referenced but are deep copies instead
 
-    const {patternCells, colorCells, patternXLength, patternYLength,
+    const {patternCells, colorCells, patternXLength, patternYLength, setActiveColorCell,
         unusedSymbols, setPatternCells, setColorCells, doClearHistory, setDoClearHistory,
         setPatternXLength, setPatternYLength,  doMakeCopy, setDoMakeCopy,
-        setUnusedSymbols} = useContext(PatternContext);
+        setUnusedSymbols, setComboColorCells} = useContext(PatternContext);
     const [prevMoves, setPrevMoves] = useState([]);
     const [nextMoves, setNextMoves] = useState([]);
     const [isUndoing, setIsUndoing] = useState(false);
@@ -67,6 +67,8 @@ const UndoRedo = () => {
 
 
     const undo = () => {
+        setComboColorCells([]);
+        setActiveColorCell(null);
         let prevCopy = [...prevMoves];
         let nextCopy = [...nextMoves];
         let lastIndex = prevCopy.length - 1;
@@ -85,6 +87,8 @@ const UndoRedo = () => {
 
     const redo = () => {
         setIsRedoing(true);
+        setComboColorCells([]);
+        setActiveColorCell(null);
         let nextCopy = [...nextMoves];
         let lastIndex = nextCopy.length - 1;
         let newState = JSON.parse(nextCopy[lastIndex]);
