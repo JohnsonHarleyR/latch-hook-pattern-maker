@@ -55,7 +55,9 @@
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    
 }
+
 
 .modal-content {
     background-color: #fefefe;
@@ -63,4 +65,17 @@
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.modal-content.instruction {
+    width: 400px;
+    height: auto;
+    overflow: auto;
+    overflow-wrap: normal;
+    z-index: 2; /* Sit on very very top */
+}
+
+.question-icon:hover {
+    color: blue;
+    cursor: pointer;
 }

@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { PatternContext } from '../../PatternContext';
+import { PatternContext } from '../PatternContext';
 
 const SaveLoad = () => {
 

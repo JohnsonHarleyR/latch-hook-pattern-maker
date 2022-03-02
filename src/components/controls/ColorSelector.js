@@ -4,6 +4,7 @@ import ColorCell from '../ColorCell';
 import SelectorChoice from './SelectorChoice';
 import ChooseSelectMode from './ChooseSelectMode';
 import CombineCells from './CombineCells';
+import InstructionIcon from '../Instructions/InstructionIcon';
 import "../../styles.css";
 
 const ColorSelector = () => {
@@ -74,6 +75,7 @@ const ColorSelector = () => {
     return(
         <div>
             <button onClick={updateColorCounts} ref={updateBtn}>Update Counts</button>
+            <InstructionIcon message="Clicking this button will count how many threads are needed for each color. You can update this anytime a change is made to the canvas."/>
             <div style={{overflowY: "scroll", width: "250px", height: "300px"}}>
             {colorCellsDisplay}
             </div>

@@ -34,6 +34,8 @@ const PatternProvider = ({children}) => {
     const [yAlign, setYAlign] = useState('start'); // for mapping an image onto the canvas
     const [xAlign, setXAlign] = useState('start'); // how should the image be cropped, basically
 
+    const [instructions, setInstructions] = useState(null);
+
     useEffect(() => {
         let symbolsCopy = [...unusedSymbols];
         let colorCellsCopy = [...colorCells];
@@ -91,11 +93,13 @@ const PatternProvider = ({children}) => {
         image, imagePattern, selectMode, unusedSymbols,
         comboColorCells, colorDifAllow, xAlign, yAlign,
         allowCountUpdate, doMakeCopy, doClearHistory,
+        instructions,
         setColorCells, setActiveColorCell, setPatternCells, 
         setPatternXLength, setPatternYLength, setIsMouseDown, 
         setImage, setImagePattern, setSelectMode, setUnusedSymbols,
         setComboColorCells, setColorDifAllow, setXAlign, setYAlign,
-        setAllowCountUpdate, setDoMakeCopy, setDoClearHistory}}>
+        setAllowCountUpdate, setDoMakeCopy, setDoClearHistory,
+        setInstructions}}>
         {children}
     </PatternContext.Provider>
     );
