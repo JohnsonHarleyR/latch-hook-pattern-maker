@@ -14,7 +14,7 @@ const FileUpload = () => {
                 setPatternCells, setPatternImage, patternXLength, colorDifAllow,
                 patternYLength, setColorCells, colorCells, setColorDifAllow, 
                 setXAlign, setYAlign, xAlign, yAlign, setAllowCountUpdate,
-                setActiveColorCell, unusedSymbols, 
+                setActiveColorCell, unusedSymbols, setDoClearHistory, 
                 setUnusedSymbols} = useContext(PatternContext);
         const [loadingMessage, setLoadingMessage] = useState("");
 
@@ -115,6 +115,7 @@ const FileUpload = () => {
                         setPatternCellInfoSelectorMode(patternCells, setPatternCells, colorData);
                         setLoadingMessage("");
                         setAllowCountUpdate(true);
+                        setDoClearHistory(true);
                 }
         }, [isFinishedSelectingColors])
 

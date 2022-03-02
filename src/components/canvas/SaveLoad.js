@@ -4,7 +4,7 @@ import { PatternContext } from '../../PatternContext';
 const SaveLoad = () => {
 
     const {patternCells, colorCells, patternXLength, patternYLength,
-        unusedSymbols, setPatternCells, setColorCells, 
+        unusedSymbols, setPatternCells, setColorCells, setDoClearHistory,
         setPatternXLength, setPatternYLength,  doMakeCopy, setDoMakeCopy,
         setUnusedSymbols} = useContext(PatternContext);
     const [errorMessage, setErrorMessage] = useState('');
@@ -56,6 +56,7 @@ const SaveLoad = () => {
             } else {
                 loadFronString(patternString);
                 setErrorMessage('Pattern loaded!');
+                setDoClearHistory(true);
             }
         }
     }

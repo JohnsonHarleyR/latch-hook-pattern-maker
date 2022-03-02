@@ -6,7 +6,7 @@ const UndoRedo = () => {
     // TODO fix this so that the copies of the data aren't referenced but are deep copies instead
 
     const {patternCells, colorCells, patternXLength, patternYLength,
-        unusedSymbols, setPatternCells, setColorCells, 
+        unusedSymbols, setPatternCells, setColorCells, doClearHistory, setDoClearHistory,
         setPatternXLength, setPatternYLength,  doMakeCopy, setDoMakeCopy,
         setUnusedSymbols} = useContext(PatternContext);
     const [prevMoves, setPrevMoves] = useState([]);
@@ -40,6 +40,14 @@ const UndoRedo = () => {
                 }
         }
     }, [doMakeCopy]);
+
+    useEffect(() => {
+        if (doClearHistory) {
+            setNextMoves([]);
+            setPrevMoves([]);
+            setDoClearHistory(false);
+        }
+    }, [doClearHistory]);
 
     useEffect(() => {
         if (prevMoves.length < 2) {

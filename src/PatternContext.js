@@ -26,6 +26,7 @@ const PatternProvider = ({children}) => {
     const [isMouseDown, setIsMouseDown] = useState(false);
     const [allowCountUpdate, setAllowCountUpdate] = useState(true); // whether to show the button to show the count for each color
     const [doMakeCopy, setDoMakeCopy] = useState(false); // tells the computer when to make a copy
+    const [doClearHistory, setDoClearHistory] = useState(false);
 
     const [image, setImage] = useState(null); // uploaded image
     const [imagePattern, setImagePattern] = useState(null); // a pattern created from an image
@@ -89,12 +90,12 @@ const PatternProvider = ({children}) => {
         patternCells, patternXLength, patternYLength, isMouseDown,
         image, imagePattern, selectMode, unusedSymbols,
         comboColorCells, colorDifAllow, xAlign, yAlign,
-        allowCountUpdate, doMakeCopy,
+        allowCountUpdate, doMakeCopy, doClearHistory,
         setColorCells, setActiveColorCell, setPatternCells, 
         setPatternXLength, setPatternYLength, setIsMouseDown, 
         setImage, setImagePattern, setSelectMode, setUnusedSymbols,
         setComboColorCells, setColorDifAllow, setXAlign, setYAlign,
-        setAllowCountUpdate, setDoMakeCopy}}>
+        setAllowCountUpdate, setDoMakeCopy, setDoClearHistory}}>
         {children}
     </PatternContext.Provider>
     );
