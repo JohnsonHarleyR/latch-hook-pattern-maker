@@ -8,6 +8,7 @@ import { getImageCellWidth, getCellColors, setPatternCellInfo, getListOfColors,
 import ImageModal from './ImageModal';
 
 // TODO Make it so you don't have to choose a different image every time you want to upload.
+// TODO refactor some of this so that some of it shows up in the image modal instead
 
 const FileUpload = () => {  
         const {image, setImage, imagePattern, setImagePattern, patternCells,

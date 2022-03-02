@@ -16,8 +16,10 @@ const SizeSelect = ({setFunction, keyStart, checkValue}) => {
     }
 
     useEffect(() => {
-        if (!isSetting) {
+        if (checkValue) {
             selectRef.current.value = checkValue;
+        }
+        if (!isSetting) {
             setFeet(getFeet(checkValue));
         } else {
             setIsSetting(false);

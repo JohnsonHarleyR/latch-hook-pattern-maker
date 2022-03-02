@@ -34,6 +34,18 @@ const SizeChanger = () => {
         }
     }, [xLengthSelect, yLengthSelect]);
 
+    useEffect(() => {
+        if (patternXLength && patternXLength !== xLengthSelect) {
+            setXLengthSelect(patternXLength);
+        }
+    }, [patternXLength]);
+
+    useEffect(() => {
+        if (patternYLength && patternYLength !== yLengthSelect) {
+            setYLengthSelect(patternYLength);
+        }
+    }, [patternYLength]);
+
 
     return(
         <FlexCol>

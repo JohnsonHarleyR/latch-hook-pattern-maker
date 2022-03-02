@@ -24,7 +24,7 @@ export const getRecommendedSize = (imgWidth, imgHeight) => {
 }
 
 export const getRatio = (height, width) => {
-    return Math.round(height / width, 3);
+    return (height / width).toFixed(2);
 }
 
 export const createColorCells = (listOfColors, unusedSymbols, setUnusedSymbols) => {

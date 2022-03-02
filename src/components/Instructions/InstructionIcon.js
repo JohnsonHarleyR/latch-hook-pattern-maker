@@ -14,7 +14,9 @@ const InstructionIcon = ({message}) => {
     return(
         <>
             <span className="question-icon" onClick={showInstructions}>
-                (?)
+                <small>
+                    (?)
+                </small>
             </span>
         </>
     );

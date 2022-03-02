@@ -75,7 +75,13 @@
     z-index: 2; /* Sit on very very top */
 }
 
-.question-icon:hover {
+.question-icon {
     color: blue;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.question-icon:hover {
+    color: purple;
     cursor: pointer;
 }
