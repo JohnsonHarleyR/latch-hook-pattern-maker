@@ -7,29 +7,34 @@ const UndoRedo = () => {
 
     const {patternCells, colorCells, patternXLength, patternYLength,
         unusedSymbols, setPatternCells, setColorCells, 
-        setPatternXLength, setPatternYLength, 
+        setPatternXLength, setPatternYLength,  doMakeCopy, setDoMakeCopy,
         setUnusedSymbols} = useContext(PatternContext);
     const [prevMoves, setPrevMoves] = useState([]);
     const [nextMoves, setNextMoves] = useState([]);
+    const [isUndoing, setIsUndoing] = useState(false);
+    const [isRedoing, setIsRedoing] = useState(false);
     const undoButton = useRef();
     const redoButton = useRef();
+    let hitCount = 0;
 
     useEffect(() => {
-        if (patternCells) {
+        if (doMakeCopy) {
             let prevCopy = [...prevMoves];
-            prevCopy.push({
-                pattern: [...patternCells],
-                color: [...colorCells],
-                yLength: patternYLength,
-                xLength: patternXLength,
-                symbols: [...unusedSymbols]
-            });
-            setPrevMoves(prevCopy);
+                let newMove = {
+                    pattern: patternCells,
+                    color: colorCells,
+                    yLength: patternYLength,
+                    xLength: patternXLength,
+                    symbols: unusedSymbols
+                };
+                prevCopy.push(JSON.stringify(newMove));
+                setPrevMoves(prevCopy);
+                setDoMakeCopy(false);
         }
-    }, [patternCells]);
+    }, [doMakeCopy]);
 
     useEffect(() => {
-        if (prevMoves.length <= 2) {
+        if (prevMoves.length < 2) {
             undoButton.current.disabled = true;
         } else {
             undoButton.current.disabled = false;
@@ -44,10 +49,12 @@ const UndoRedo = () => {
         }
     }, [nextMoves]);
 
+
     const undo = () => {
         let prevCopy = [...prevMoves];
         let lastIndex = prevCopy.length - 1;
-        let newState = prevCopy[lastIndex];
+        let prevIndex = prevCopy.length - 2;
+        let newState = JSON.parse(prevCopy[prevIndex]);
         prevCopy.splice(lastIndex, 1);
         setPrevMoves(prevCopy);
         setPatternXLength(newState.xLength);

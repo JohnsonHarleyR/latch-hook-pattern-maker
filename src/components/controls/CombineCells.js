@@ -8,7 +8,7 @@ const CombineCells = () => {
     const {colorCells, setColorCells, activeColorCell,
         setActiveColorCell, comboColorCells, setComboColorCells,
         patternCells, setPatternCells, unusedSymbols,
-        setUnusedSymbols} 
+        setUnusedSymbols, setDoMakeCopy} 
         = useContext(PatternContext);
 
     const combineCells = () => {
@@ -59,6 +59,9 @@ const CombineCells = () => {
 
         // deselect the active color cell
         setActiveColorCell(null);
+
+        // make copy
+        setDoMakeCopy(true);
     }
 
     return(

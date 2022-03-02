@@ -5,7 +5,8 @@ import "../../styles.css";
 const SelectorChoice = () => {
     const {colorCells, setColorCells, 
         activeColorCell, setActiveColorCell, 
-        unusedSymbols, setUnusedSymbols} = useContext(PatternContext);
+        unusedSymbols, setUnusedSymbols, 
+        setDoMakeCopy} = useContext(PatternContext);
     const [color, setColor] = useState("#ffffff");
     const [symbolColor, setSymbolColor] = useState("#707070");
     const [symbol, setSymbol] = useState('!');
@@ -176,29 +177,39 @@ const SelectorChoice = () => {
     }
 
     const moveCellUp = () => {
+        let doSet = true;
         let currentIndex = getActiveIndex();
         let spliceIndex = currentIndex - 1;
         let cell = colorCells[currentIndex];
         if (spliceIndex < 0) {
             spliceIndex = 0;
+            doSet = false;
         }
         let cellsCopy = [...colorCells];
         cellsCopy.splice(currentIndex, 1);
         cellsCopy.splice(spliceIndex, 0, cell);
         setColorCells(cellsCopy);
+        if (doSet) {
+            setDoMakeCopy(true);
+        }
     }
 
     const moveCellDown = () => {
+        let doSet = true;
         let currentIndex = getActiveIndex();
         let spliceIndex = currentIndex + 1;
         let cell = colorCells[currentIndex];
         if (spliceIndex >= colorCells.length) {
             spliceIndex = colorCells.length - 1;
+            doSet = false;
         }
         let cellsCopy = [...colorCells];
         cellsCopy.splice(currentIndex, 1);
         cellsCopy.splice(spliceIndex, 0, cell);
         setColorCells(cellsCopy);
+        if (doSet) {
+            setDoMakeCopy(true);
+        }
     }
 
     const hitDefButton = () => {
@@ -220,6 +231,13 @@ const SelectorChoice = () => {
             if (index !== null) {
                 let newCell = cellsCopy[index];
                 let originalSymbol = newCell.symbol;
+                let doSet = false;
+                if (newCell.colorName !== newName || 
+                    newCell.fillColor !== color || 
+                    newCell.symbol !== symbol || 
+                    newCell.symbolColor !== symbolColor) {
+                        doSet = true;
+                    }
                 newCell.colorName = newName;
                 newCell.fillColor = color;
                 newCell.symbol = symbol;
@@ -228,7 +246,11 @@ const SelectorChoice = () => {
                 setActiveColorCell(cellsCopy[index])
                 setColorCells(cellsCopy);
                 removeSymbolFromUnused(originalSymbol);
+                if (doSet) {
+                    setDoMakeCopy(true);
+                }
             }
+            
         } else {
             setErrorMessage("");
             let cellsCopy = [...colorCells];
@@ -237,6 +259,7 @@ const SelectorChoice = () => {
             cellsCopy.push(newCell);
             setColorCells(cellsCopy);
             removeSymbolFromUnused();
+            setDoMakeCopy(true);
         }
     }
 
@@ -260,6 +283,8 @@ const SelectorChoice = () => {
                 let symbolsCopy = [...unusedSymbols];
                 symbolsCopy.push(cellSymbol);
                 setUnusedSymbols(symbolsCopy);
+
+                setDoMakeCopy(true);
             }
             
         }

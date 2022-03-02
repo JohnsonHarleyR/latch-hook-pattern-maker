@@ -22,6 +22,7 @@ const FileUpload = () => {
         const [showImageModal, setShowImageModal] = useState(false);
         const [isFinishedSelectingColors, setIsFinishedSelectingColors] = useState(false);
 
+        const fileInput = useRef();
         const difInput = useRef();
         const xAlignInput = useRef();
         const yAlignInput = useRef();
@@ -30,21 +31,23 @@ const FileUpload = () => {
         let ctx;
 
         const setTheFile = (e) => {    
-                setLoadingMessage("loading image...");
-                setActiveColorCell(null);
-                ctx = canvasRef.current.getContext("2d");
-                let reader = new FileReader();
-                reader.onload = (event) => {
-                        let img = new Image();
-                        img.onload = () => {
-                                canvasRef.current.width = img.width;
-                                canvasRef.current.height = img.height;
-                                ctx.drawImage(img,0,0);
-                                setImage(img);
+                if (e.target.files && e.target.files.length !== 0) {
+                        setLoadingMessage("loading image...");
+                        setActiveColorCell(null);
+                        ctx = canvasRef.current.getContext("2d");
+                        let reader = new FileReader();
+                        reader.onload = (event) => {
+                                let img = new Image();
+                                img.onload = () => {
+                                        canvasRef.current.width = img.width;
+                                        canvasRef.current.height = img.height;
+                                        ctx.drawImage(img,0,0);
+                                        setImage(img);
+                                }
+                                img.src = event.target.result;
                         }
-                        img.src = event.target.result;
+                        reader.readAsDataURL(e.target.files[0]);  
                 }
-                reader.readAsDataURL(e.target.files[0]);  
         }
 
         const changeColorAllowance = () => {
@@ -76,6 +79,9 @@ const FileUpload = () => {
                         } else if (uploadMode === "selector") {
                                 setShowImageModal(true);
                         }
+
+                        // clear the file upload
+                        fileInput.current.value = null;
                 }
 
         }, [image]);
@@ -166,7 +172,7 @@ const FileUpload = () => {
                         <br></br>
                         Color Allowance<input type="number" ref={difInput} onChange={changeColorAllowance}/>
                         <br></br>
-                        <input type="file" onChange={setTheFile} />    
+                        <input type="file" ref={fileInput} onChange={setTheFile} />    
                         {/* <button className="btn btn-primary" onClick={submit}>Upload</button>     */}
                         <div ref={canvasDiv}>
                                 <canvas ref={canvasRef}></canvas>
