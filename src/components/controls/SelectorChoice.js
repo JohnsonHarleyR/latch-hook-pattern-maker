@@ -215,9 +215,14 @@ const SelectorChoice = () => {
     const hitDefButton = () => {
         let newName = nameInput.current.value;
         console.log(newName);
+        // if (newName === "") {
+        //     setErrorMessage("You must enter a value for the color name.");
+        // } else 
         if (newName === "") {
-            setErrorMessage("You must enter a value for the color name.");
-        } else if (activeColorCell !== null) {
+            newName = "[color name here]";
+        }
+        
+        if (activeColorCell !== null) {
             setErrorMessage("");
             let cellsCopy = [...colorCells];
             let index = null;

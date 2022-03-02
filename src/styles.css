@@ -2,6 +2,10 @@
     display: flex;
 }
 
+body {
+    overflow: visible;
+}
+
 .color-cell-row, .x-row {
     display: flex;
 }
@@ -58,6 +62,14 @@
     
 }
 
+.modal.print {
+    position: static; /* Stay in place */
+    z-index: 3; /* Sit on top */
+    width: auto;
+    height: auto;
+    overflow: visible!important;
+    
+}
 
 .modal-content {
     background-color: #fefefe;
@@ -75,6 +87,15 @@
     z-index: 2; /* Sit on very very top */
 }
 
+.modal-content.print {
+    position: static; /* Stay in place */
+    margin: 0;
+    z-index: 3; /* Sit on very very top */
+    border: none;
+    width: auto;
+    height: auto;
+}
+
 .question-icon {
     color: blue;
     padding-left: 2px;
@@ -84,4 +105,9 @@
 .question-icon:hover {
     color: purple;
     cursor: pointer;
+}
+
+@media print {
+    div { page-break-after:auto; page-break-inside:avoid; };
+    td {page-break-inside:avoid;};
 }

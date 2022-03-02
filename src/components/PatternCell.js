@@ -51,7 +51,8 @@ const PatternCell = ({cell}) => {
     }
 
     return (
-        <div style={{backgroundColor: cell.fillColor, color: cell.symbolColor}} className={cellClassName} 
+        <div style={{backgroundColor: cell.fillColor, color: cell.symbolColor, 
+            pageBreakBefore: "always"}} className={cellClassName} 
             onMouseDown={clickCell} onMouseOver={dragOverCell} 
             onMouseUp={releaseMouse}>
             {cell.symbol}

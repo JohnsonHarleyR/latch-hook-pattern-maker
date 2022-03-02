@@ -6,6 +6,8 @@ import { CellClass, PatternCellClass, ColorCellClass } from './classes/Component
 const PatternContext = createContext({colorCells: [], patternCells: [], activeColorCell: null});
 
 const PatternProvider = ({children}) => {
+    const [isPrinting, setIsPrinting] = useState(false);
+
     const [colorCells, setColorCells] = useState([]); // the cells used in the list of colors - referenced by pattern cells
     const [activeColorCell, setActiveColorCell] = useState(null); // the selected color cell - selected by mouse
     const [comboColorCells, setComboColorCells] = useState([]); // for the sake of combining color cells
@@ -93,13 +95,13 @@ const PatternProvider = ({children}) => {
         image, imagePattern, selectMode, unusedSymbols,
         comboColorCells, colorDifAllow, xAlign, yAlign,
         allowCountUpdate, doMakeCopy, doClearHistory,
-        instructions,
+        instructions, isPrinting,
         setColorCells, setActiveColorCell, setPatternCells, 
         setPatternXLength, setPatternYLength, setIsMouseDown, 
         setImage, setImagePattern, setSelectMode, setUnusedSymbols,
         setComboColorCells, setColorDifAllow, setXAlign, setYAlign,
         setAllowCountUpdate, setDoMakeCopy, setDoClearHistory,
-        setInstructions}}>
+        setInstructions, setIsPrinting}}>
         {children}
     </PatternContext.Provider>
     );
