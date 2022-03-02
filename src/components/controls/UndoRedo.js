@@ -30,6 +30,14 @@ const UndoRedo = () => {
                 prevCopy.push(JSON.stringify(newMove));
                 setPrevMoves(prevCopy);
                 setDoMakeCopy(false);
+
+                if (!isRedoing) {
+                    if (nextMoves.length !== 0) {
+                        setNextMoves([]);
+                    }
+                } else {
+                    setIsRedoing(false);
+                }
         }
     }, [doMakeCopy]);
 
@@ -52,11 +60,14 @@ const UndoRedo = () => {
 
     const undo = () => {
         let prevCopy = [...prevMoves];
+        let nextCopy = [...nextMoves];
         let lastIndex = prevCopy.length - 1;
         let prevIndex = prevCopy.length - 2;
+        nextCopy.push(prevCopy[lastIndex]);
         let newState = JSON.parse(prevCopy[prevIndex]);
         prevCopy.splice(lastIndex, 1);
         setPrevMoves(prevCopy);
+        setNextMoves(nextCopy);
         setPatternXLength(newState.xLength);
         setPatternYLength(newState.yLength);
         setUnusedSymbols(newState.symbols);
@@ -64,11 +75,26 @@ const UndoRedo = () => {
         setPatternCells(newState.pattern);
     }
 
+    const redo = () => {
+        setIsRedoing(true);
+        let nextCopy = [...nextMoves];
+        let lastIndex = nextCopy.length - 1;
+        let newState = JSON.parse(nextCopy[lastIndex]);
+        nextCopy.splice(lastIndex, 1);
+        setNextMoves(nextCopy);
+        setPatternXLength(newState.xLength);
+        setPatternYLength(newState.yLength);
+        setUnusedSymbols(newState.symbols);
+        setColorCells(newState.color);
+        setPatternCells(newState.pattern);
+        setDoMakeCopy(true);
+    }
+
 
     return (
         <div>
             <button ref={undoButton} onClick={undo}>Undo</button>
-            <button ref={redoButton} onClick={undo}>Undo</button>
+            <button ref={redoButton} onClick={redo}>Redo</button>
         </div>
     )
 }
