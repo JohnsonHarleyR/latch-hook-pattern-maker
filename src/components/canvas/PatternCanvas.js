@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import "../../styles.css";
 import { PatternContext, createCell } from '../../PatternContext';
 import PatternCell from '../PatternCell';
+import SaveLoad from './SaveLoad';
 
 const PatternCanvas = () => {
     const {patternCells, setPatternCells, colorCells} = useContext(PatternContext);
@@ -73,7 +74,10 @@ const PatternCanvas = () => {
 
     return(
         <div>
+            <SaveLoad />
+            <br></br>
             {canvasDisplay}
+
         </div>
     );
 }

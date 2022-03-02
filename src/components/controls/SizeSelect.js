@@ -1,19 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import { PatternContext } from '../../PatternContext';
 
-const SizeSelect = ({setFunction, keyStart}) => {
+const SizeSelect = ({setFunction, keyStart, checkValue}) => {
 
     const [feet, setFeet] = useState(1);
     const [options, setOption] = useState(getOptions);
+    const [isSetting, setIsSetting] = useState(false);
+    const selectRef = useRef();
 
-    const changeLength = (e) => {
-        let newLength = e.target.value;
+    const changeLength = () => {
+        let newLength = selectRef.current.value;
         setFeet(getFeet(newLength));
+        setIsSetting(true);
         setFunction(newLength);
     }
 
+    useEffect(() => {
+        if (!isSetting) {
+            selectRef.current.value = checkValue;
+            setFeet(getFeet(checkValue));
+        } else {
+            setIsSetting(false);
+        }
+    }, [checkValue]);
+
     return (
         <div>
-            <select onChange={changeLength}>
+            <select onChange={changeLength} ref={selectRef}>
                 {options.map((option => {
                     return (<option key={`${keyStart}${option.value}`} value={option.value}>{option.label}</option>)
                 }))}

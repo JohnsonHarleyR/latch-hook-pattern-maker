@@ -7,7 +7,7 @@ import "../../styles.css";
 
 const SizeChanger = () => {
     const {setPatternXLength, setPatternYLength,
-        image} = useContext(PatternContext);
+        patternXLength, patternYLength, image} = useContext(PatternContext);
     const [xLengthSelect, setXLengthSelect] = useState(40);
     const [yLengthSelect, setYLengthSelect] = useState(40);
     const [patternRatio, setPatternRatio] = useState("n/a");
@@ -39,9 +39,9 @@ const SizeChanger = () => {
         <FlexCol>
             <h2>Change Canvas Size</h2>
             <Flex>
-                <SizeSelect key={"xSize"} setFunction={setXLengthSelect} keyStart={"x"} />
+                <SizeSelect key={"xSize"} setFunction={setXLengthSelect} keyStart={"x"} checkValue={patternXLength} />
                 <span> X </span>
-                <SizeSelect key={"ySize"} setFunction={setYLengthSelect} keyStart={"y"} />
+                <SizeSelect key={"ySize"} setFunction={setYLengthSelect} keyStart={"y"} checkValue={patternYLength} />
             </Flex>
             <p>
                 Pattern ratio: {patternRatio} Image ratio: {imageRatio} (w / h)
