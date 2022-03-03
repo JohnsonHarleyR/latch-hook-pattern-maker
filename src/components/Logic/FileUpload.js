@@ -6,6 +6,7 @@ import { getImageCellWidth, getCellColors, setPatternCellInfo, getListOfColors,
         getCellColorsSelectMode, 
         setPatternCellInfoSelectorMode} from './ImageLogic';
 import ImageModal from './ImageModal';
+import Layers from '../controls/layering/Layers';
 
 // TODO Make it so you don't have to choose a different image every time you want to upload.
 // TODO refactor some of this so that some of it shows up in the image modal instead
@@ -155,33 +156,39 @@ const FileUpload = () => {
         
 
         return (    
-                <div className="container-fluid">    
-                <h2>File Upload</h2>    
-                        {loadingMessage}
-                        <br></br>
-                        XAlign: 
-                        <select ref={xAlignInput} onChange={changeXAlign}>
-                                <option value="start">start</option>
-                                <option value="center">center</option>
-                                <option value="end">end</option>
-                        </select>
-                        YAlign: 
-                        <select ref={yAlignInput} onChange={changeYAlign}>
-                                <option value="start">start</option>
-                                <option value="center">center</option>
-                                <option value="end">end</option>
-                        </select>
-                        <br></br>
-                        Color Allowance<input type="number" ref={difInput} onChange={changeColorAllowance}/>
-                        <br></br>
-                        <input type="file" ref={fileInput} onChange={setTheFile} />    
-                        {/* <button className="btn btn-primary" onClick={submit}>Upload</button>     */}
-                        <div ref={canvasDiv}>
-                                <canvas ref={canvasRef}></canvas>
-                        </div>   
-                        <ImageModal image={image} uploadMode={uploadMode} setIsFinished={setIsFinishedSelectingColors}
-                                showImageModal={showImageModal} setShowImageModal={setShowImageModal} />
-                </div>    
+                <div style={{display: "flex"}}>
+                        <div className="container-fluid">    
+                                <h2>File Upload</h2>    
+                                {loadingMessage}
+                                <br></br>
+                                XAlign: 
+                                <select ref={xAlignInput} onChange={changeXAlign}>
+                                        <option value="start">start</option>
+                                        <option value="center">center</option>
+                                        <option value="end">end</option>
+                                </select>
+                                YAlign: 
+                                <select ref={yAlignInput} onChange={changeYAlign}>
+                                        <option value="start">start</option>
+                                        <option value="center">center</option>
+                                        <option value="end">end</option>
+                                </select>
+                                <br></br>
+                                Color Allowance<input type="number" ref={difInput} onChange={changeColorAllowance}/>
+                                <br></br>
+                                <input type="file" ref={fileInput} onChange={setTheFile} />    
+                                {/* <button className="btn btn-primary" onClick={submit}>Upload</button>     */}
+                                <div ref={canvasDiv}>
+                                        <canvas ref={canvasRef}></canvas>
+                                </div>   
+                                <ImageModal image={image} uploadMode={uploadMode} setIsFinished={setIsFinishedSelectingColors}
+                                        showImageModal={showImageModal} setShowImageModal={setShowImageModal} />
+                        </div>    
+                        <div>
+                                <Layers />
+                        </div>
+                </div>
+                
         )    
 }    
 export default FileUpload;
