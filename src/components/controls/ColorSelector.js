@@ -10,7 +10,7 @@ import "../../styles.css";
 const ColorSelector = () => {
     const {colorCells, selectMode, setActiveColorCell, 
         setComboColorCells, setColorCells, patternCells, 
-        allowCountUpdate, setAllowCountUpdate} 
+        allowCountUpdate, setAllowCountUpdate, setDoMakeCopy} 
         = useContext(PatternContext);
     const [colorCellsDisplay, setColorCellsDisplay] = useState([]);
     const [controlDisplay, setControlDisplay] = useState(<SelectorChoice />);
@@ -28,6 +28,7 @@ const ColorSelector = () => {
             );
         });
         setColorCellsDisplay(newDisplay);
+        setDoMakeCopy(true);
     }, [colorCells]);
 
     useEffect(() => {

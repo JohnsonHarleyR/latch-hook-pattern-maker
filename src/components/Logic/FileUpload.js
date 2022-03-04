@@ -183,6 +183,13 @@ const FileUpload = () => {
                                 <h2>File Upload</h2>    
                                 {loadingMessage}
                                 <br></br>
+                                <div style={{display: "flex"}}>
+                                        <button ref={normalModeBtn} onClick={clickNormalMode}>Normal Mode</button>
+                                        <button ref={selectorModeBtn} onClick={clickSelectorMode}>Selector Mode</button>
+                                </div>
+                                Color Allowance<input type="number" min={0} max={100} 
+                                        ref={difInput} onChange={changeColorAllowance}/>
+                                <br></br>
                                 XAlign: 
                                 <select ref={xAlignInput} onChange={changeXAlign}>
                                         <option value="start">start</option>
@@ -195,14 +202,6 @@ const FileUpload = () => {
                                         <option value="center">center</option>
                                         <option value="end">end</option>
                                 </select>
-                                <br></br>
-                                Color Allowance<input type="number" min={0} max={100} 
-                                        ref={difInput} onChange={changeColorAllowance}/>
-                                <br></br>
-                                <div style={{display: "flex"}}>
-                                        <button ref={normalModeBtn} onClick={clickNormalMode}>Normal Mode</button>
-                                        <button ref={selectorModeBtn} onClick={clickSelectorMode}>Selector Mode</button>
-                                </div>
                                 <br></br>
                                 <input type="file" ref={fileInput} onChange={setTheFile} />    
                                 {/* <button className="btn btn-primary" onClick={submit}>Upload</button>     */}

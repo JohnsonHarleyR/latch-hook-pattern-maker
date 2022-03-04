@@ -5,7 +5,7 @@ import LayerOutput from './LayerOutput';
 const Layers = () => {
 
     return(
-        <div style={{display:"flex"}}>
+        <div style={{display:"flex", flexDirection:"column"}}>
             <LayerOutput />
             <LayerInput />
         </div>

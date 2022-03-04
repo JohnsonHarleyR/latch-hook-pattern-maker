@@ -28,6 +28,7 @@ const SaveLoad = () => {
         setUnusedSymbols(newState.symbols);
         setColorCells(newState.color);
         setPatternCells(newState.pattern);
+        setDoMakeCopy(true);
     }
 
     const savePattern = () => {
@@ -57,6 +58,7 @@ const SaveLoad = () => {
                 loadFronString(patternString);
                 setErrorMessage('Pattern loaded!');
                 setDoClearHistory(true);
+                setDoMakeCopy(true); // HACK it has to do this twice for it to register
             }
         }
     }
