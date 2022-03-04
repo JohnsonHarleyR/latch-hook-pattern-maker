@@ -155,7 +155,7 @@ const getStartPos = (alignment, fullLength, cellLength, cellCount) => {
 }
 
 export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow, 
-    xAlign, yAlign, xFullLength, yFullLength, unusedSymbols, setUnusedSymbols) => {
+    xAlign, yAlign, xFullLength, yFullLength, unusedSymbols, setUnusedSymbols, useColorDif) => {
     let symbolsCopy = [...unusedSymbols];
     let cellColors = [];
     let colorList = [];
@@ -168,7 +168,7 @@ export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow,
         let yRow = [];
         for (let x = 0; x < xCount; x++) {
             let startX = x * cellWidth + xStartAdd;
-            let newColor = determineCellColor(ctx, startX, startY, cellWidth, cellWidth, colorDifAllow);
+            let newColor = determineCellColor(ctx, startX, startY, cellWidth, cellWidth, colorDifAllow, useColorDif);
 
             // now get the difference with prev
             let similar = null;
@@ -176,7 +176,7 @@ export const getCellColors = (ctx, cellWidth, xCount, yCount, colorDifAllow,
             let newSymbol = null;
             for (let i = 0; i < colorList.length; i++) {
                 let dif = getColorDifference(colorListRGB[i], newColor, colorDifAllow);
-                if (dif < colorDifAllow) {
+                if (dif <= colorDifAllow) {
                     newColor = colorListRGB[i];
                     similar = colorList[i];
                     refId = colorList[i].id;
@@ -228,7 +228,7 @@ export const getClosestColor = (cellColors, newColor) => {
 }
 
 export const getCellColorsSelectMode = (ctx, cellWidth, xCount, yCount, colorDifAllow, 
-    xAlign, yAlign, xFullLength, yFullLength, colorCells) => {
+    xAlign, yAlign, xFullLength, yFullLength, colorCells, useColorDif) => {
     let cellColors = [];
     let xStartAdd = getStartPos(xAlign, xFullLength, cellWidth, xCount);
     let yStartAdd = getStartPos(yAlign, yFullLength, cellWidth, yCount);
@@ -238,7 +238,7 @@ export const getCellColorsSelectMode = (ctx, cellWidth, xCount, yCount, colorDif
         for (let x = 0; x < xCount; x++) {
             let startX = x * cellWidth + xStartAdd;
             // get the main color of the cell
-            let newColor = determineCellColor(ctx, startX, startY, cellWidth, cellWidth, colorDifAllow);
+            let newColor = determineCellColor(ctx, startX, startY, cellWidth, cellWidth, colorDifAllow, useColorDif);
 
             // now get the closest cell color
             let closestColor = getClosestColor(colorCells, newColor);
@@ -249,8 +249,11 @@ export const getCellColorsSelectMode = (ctx, cellWidth, xCount, yCount, colorDif
     return cellColors;
 }
 
-const determineCellColor = (ctx, startX, startY, xLength, yLength, colorDifAllow) => {
+const determineCellColor = (ctx, startX, startY, xLength, yLength, colorDifAllow, useColorDif) => {
     let colorCounts = getColorCounts(ctx, startX, startY, xLength, yLength, colorDifAllow);
+    if (useColorDif) {
+        colorCounts = combineColorCountsByColorDifAll(colorCounts, colorDifAllow);
+    }
     let highest = null;
     let highestCount = 0;
     colorCounts.forEach(color => {
@@ -261,6 +264,79 @@ const determineCellColor = (ctx, startX, startY, xLength, yLength, colorDifAllow
     });
     return highest;
 }
+
+// TODO consider checking this for bugs since I had to patch 
+// it - optimize the speed - this could also be due to the color counts method since that is not supposed to give duplicates
+const combineColorCountsByColorDifAll = (colorCounts, colorDifAllow) => {
+    // sort the color counts by highest count
+    let countsCopy = [...colorCounts];
+    countsCopy.sort(compareColorCounts);
+    let adjustedCopy = [];
+    // add the count with a bool for if it was combined
+    countsCopy.forEach(count => {
+        adjustedCopy.push({
+            colorCount: count,
+            didCombine: false
+        });
+    })
+
+    // create new array to return
+    let newColorCounts = [];
+    let hexList = [];
+    for (let i = 0; i < adjustedCopy.length; i++) {
+        // only consider adding if that item was not combined
+        if (!adjustedCopy[i].didCombine) {
+            // If it's the last item, just add it - otherwise use more logic
+            if (i === adjustedCopy.length - 1) {
+                adjustedCopy[i].didCombine = true;
+                pushCountToNewList(hexList, newColorCounts, adjustedCopy[i].colorCount);
+            } else {
+                // otherwise, loop through the other color counts to see if the color dif is within range
+                for (let n = 0; n < adjustedCopy.length; n++) {
+                    // make sure the color wasn't already combined before combining
+                    if (n !== i && !adjustedCopy[n].didCombine) {
+                        let colorDif = getColorDifference(adjustedCopy[i].colorCount, adjustedCopy[n].colorCount);
+                        // if the difference is within the allowable range, combine those cells into one
+                        if (colorDif <= colorDifAllow) {
+                            // set the second didCombine to true
+                            adjustedCopy[n].didCombine = true;
+                            // now combine the counts
+                            adjustedCopy[i].colorCount.count += adjustedCopy[n].colorCount.count;
+                            // now add i count to new list
+                            pushCountToNewList(hexList, newColorCounts, adjustedCopy[i].colorCount);
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    // go through the color again and if any of them were never combined, add those to the list too
+    adjustedCopy.forEach(c => {
+        if (!c.didCombine) {
+            pushCountToNewList(hexList, newColorCounts, c.colorCount);
+        }
+    })
+    return newColorCounts;
+}
+
+const pushCountToNewList = (hexList, newList, colorCount) => {
+    if (!hexList.includes(colorCount.hex)) {
+        newList.push(colorCount);
+        hexList.push(colorCount.hex);
+    }
+}
+
+const compareColorCounts = (a, b) => {
+    if (a.count > b.count) {
+      return -1;
+    }
+    if (a.count > b.count) {
+      return 1;
+    }
+    // a must be equal to b
+    return 0;
+  }
 
 // const getColorDifference = (color1, color2) => {
 //     let rDif = color2.r - color1.r;

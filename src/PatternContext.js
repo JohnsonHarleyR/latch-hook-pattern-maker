@@ -32,7 +32,7 @@ const PatternProvider = ({children}) => {
 
     const [image, setImage] = useState(null); // uploaded image
     const [imagePattern, setImagePattern] = useState(null); // a pattern created from an image
-    const [colorDifAllow, setColorDifAllow] = useState(30); // for adjusting tolerance in color similarity when mapping an immage
+    const [colorDifAllow, setColorDifAllow] = useState(10); // for adjusting tolerance in color similarity when mapping an immage
     const [yAlign, setYAlign] = useState('start'); // for mapping an image onto the canvas
     const [xAlign, setXAlign] = useState('start'); // how should the image be cropped, basically
 
